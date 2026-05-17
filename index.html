@@ -1,1 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamAuto - Filter Negara, Genre & Tahun</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo" onclick="loadDefault()">StreamAuto 🍿</div>
+        <p>Update Otomatis Mengikuti Tren Bioskop & Drama Global</p>
+        
+        <!-- Navigasi Kategori Utama -->
+        <div class="nav-tabs">
+            <button id="btnMovie" class="tab-btn active" onclick="switchCategory('movie')">🎥 Film Bioskop</button>
+            <button id="btnTV" class="tab-btn" onclick="switchCategory('tv')">📺 Drama & Serial TV</button>
+        </div>
+
+        <!-- PANEL FILTER LENGKAP -->
+        <div class="search-bar-container">
+            <!-- Kolom Searching Film -->
+            <input type="text" id="searchInp" placeholder="Cari judul film atau drakor...">
+            <button onclick="searchContent()">Cari</button>
+            
+            <!-- Filter Negara -->
+            <select id="countrySelect" onchange="applyFilters()">
+                <option value="">-- Semua Negara --</option>
+                <option value="ID">🇮🇩 Indonesia</option>
+                <option value="US">🇺🇸 Amerika Serikat</option>
+                <option value="KR">__KO__ Korea Selatan</option>
+                <option value="CN">🇨🇳 China</option>
+                <option value="JP">🇯🇵 Jepang</option>
+                <option value="TH">🇹🇭 Thailand</option>
+            </select>
+
+            <!-- Filter Genre -->
+            <select id="genreSelect" onchange="applyFilters()">
+                <option value="">-- Semua Genre --</option>
+            </select>
+
+            <!-- Filter Tahun Pembuatan -->
+            <select id="yearSelect" onchange="applyFilters()">
+                <option value="">-- Semua Tahun --</option>
+            </select>
+
+            <!-- Urutkan Berdasarkan -->
+            <select id="sortSelect" onchange="applyFilters()">
+                <option value="popularity.desc">🔥 Paling Populer</option>
+                <option value="vote_average.desc&vote_count.gte=200">⭐ Rating Tertinggi</option>
+                <option value="primary_release_date.desc">📅 Terbaru Rilis</option>
+            </select>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2 id="sectionTitle">Sedang Tren Hari Ini 🔥</h2>
+        
+        <div id="movieGrid" class="movie-grid">
+            <div class="loading">Memuat konten terbaru...</div>
+        </div>
+    </main>
+
+    <script>
+        // MASUKKAN API KEY TMDB ANDA DI SINI
+        const TMDB_API_KEY = 'GANTI_DENGAN_API_KEY_TMDB_ANDA'; 
+        const BASE_URL = 'https://themoviedb.org';
+        
+        let currentCategory = 'movie'; 
+
+        const genresList = {
+            movie: [
+                { id: 28, name: "Action (Aksi)" }, { id: 35, name: "Comedy (Komedi)" },
+                { id: 18, name: "Drama" }, { id: 27, name: "Horror (Horor)" },
+                { id: 10749, name: "Romance (Romantis)" }, { id: 878, name: "Sci-Fi (Fiksi Ilmiah)" },
+                { id: 14, name: "Fantasy" }, { id: 53, name: "Thriller" }, { id: 16, name: "Animation (Anime/Kartun)" }
+            ],
+            tv: [
+                { id: 18, name: "Drama (Serial)" }, { id: 35, name: "Comedy (Komedi)" },
+                { id: 10759, name: "Action & Adventure" }, { id: 9648, name: "Mystery (Misteri)" },
+                { id: 10765, name: "Sci-Fi & Fantasy" }, { id: 16, name: "Animation (Anime)" }
+            ]
+        };
+
+        function initApp() {
+            generateYearOptions();
+            loadDefault();
+        }
+
+        function generateYearOptions() {
+            const yearSelect = document.getElementById('yearSelect');
+            const currentYear = new Date().getFullYear(); 
+            for (let year = currentYear; year >= 1990; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.innerText = year;
+                yearSelect.appendChild(option);
+            }
+        }
+
+        async function fetchFromTMDB(endpoint) {
+            try {
+                const response = await fetch(`${BASE_URL}${endpoint}&api_key=${TMDB_API_KEY}&language=id-ID`);
+                const data = await response.json();
+                displayContent(data.results);
+            } catch (error) {
+                console.error("Error TMDB:", error);
+                document.getElementById('movieGrid').innerHTML = "<div class='loading'>Gagal memuat data. Periksa API Key Anda!</div>";
+            }
+        }
+
+        function loadDefault() {
+            document.getElementById('searchInp').value = "";
+            document.getElementById('countrySelect').value = "";
+            document.getElementById('genreSelect').value = "";
+            document.getElementById('yearSelect').value = "";
+            document.getElementById('sortSelect').value = "popularity.desc";
+            updateGenreDropdown();
+
+            if (currentCategory === 'movie') {
+                document.getElementById('sectionTitle').innerText = "Film Bioskop Terpopuler 🔥";
+                fetchFromTMDB('/trending/movie/day?');
+            } else {
+                document.getElementById('sectionTitle').innerText = "Drama & Serial TV Terpopuler 🔥";
+                fetchFromTMDB('/trending/tv/day?');
+            }
+        }
+
+        function switchCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            if (category === 'movie') {
+                document.getElementById('btnMovie').classList.add('active');
+            } else {
+                document.getElementById('btnTV').classList.add('active');
+            }
+            loadDefault();
+        }
+
+        function updateGenreDropdown() {
+            const select = document.getElementById('genreSelect');
+            select.innerHTML = '<option value="">-- Semua Genre --</option>';
+            genresList[currentCategory].forEach(genre => {
+                const option = document.createElement('option');
+                option.value = genre.id;
+                option.innerText = genre.name;
+                select.appendChild(option);
+            });
+        }
+
+        function searchContent() {
+            const query = document.getElementById('searchInp').value.trim();
+            if (!query) return;
+
+            document.getElementById('sectionTitle').innerText = `Hasil Pencarian: "${query}" 🔍`;
+            document.getElementById('countrySelect').value = ""; 
+            document.getElementById('genreSelect').value = ""; 
+            document.getElementById('yearSelect').value = ""; 
+            
+            fetchFromTMDB(`/search/${currentCategory}?query=${encodeURIComponent(query)}`);
+        }
+
+        // FILTER GABUNGAN ULTRA LENGKAP (Negara + Genre + Tahun + Urutan)
+        function applyFilters() {
+            const countryIso = document.getElementById('countrySelect').value;
+            const genreId = document.getElementById('genreSelect').value;
+            const year = document.getElementById('yearSelect').value;
+            const sortBy = document.getElementById('sortSelect').value;
+            
+            document.getElementById('searchInp').value = ""; // Reset search text
+
+            let titleText = (currentCategory === 'movie') ? "Film" : "Drama/Series";
+            let endpoint = `/discover/${currentCategory}?sort_by=${sortBy}`;
+
+            if (countryIso) {
+                // TMDB menggunakan 'with_origin_country' untuk menyaring negara asal produksi [5]
+                endpoint += `&with_origin_country=${countryIso}`;
+                const countryName = document.getElementById('countrySelect').options[document.getElementById('countrySelect').selectedIndex].text;
+                titleText += ` [${countryName}]`;
+            }
+
+            if (genreId) {
+                endpoint += `&with_genres=${genreId}`;
+                const genreName = document.getElementById('genreSelect').options[document.getElementById('genreSelect').selectedIndex].text;
+                titleText += ` | ${genreName}`;
+            }
+
+            if (year) {
+                const yearParam = (currentCategory === 'movie') ? 'primary_release_year' : 'first_air_date_year';
+                endpoint += `&${yearParam}=${year}`;
+                titleText += ` (${year})`;
+            }
+
+            if (!countryIso && !genreId && !year && sortBy === "popularity.desc") {
+                loadDefault();
+                return;
+            }
+
+            document.getElementById('sectionTitle').innerText = `${titleText} 🎬`;
+            fetchFromTMDB(endpoint);
+        }
+
+        function displayContent(items) {
+            const grid = document.getElementById('movieGrid');
+            grid.innerHTML = ''; 
+
+            if (!items || items.length === 0) {
+                grid.innerHTML = "<div class='loading'>Konten tidak ditemukan untuk kombinasi filter ini.</div>";
+                return;
+            }
+
+            items.forEach(item => {
+                const title = item.title || item.name;
+                const targetPage = currentCategory === 'movie' ? 'nonton.html' : 'nonton-series.html';
+                const posterPath = item.poster_path 
+                    ? `https://tmdb.org{item.poster_path}` 
+                    : 'https://placeholder.com';
+
+                const releaseDate = item.release_date || item.first_air_date || '';
+                const releaseYear = releaseDate ? `(${releaseDate.split('-')[0]})` : '';
+
+                const card = document.createElement('div');
+                card.className = 'movie-card';
+                card.innerHTML = `
+                    <a href="${targetPage}?id=${item.id}">
+                        <img src="${posterPath}" alt="${title}" loading="lazy">
+                        <div class="movie-info">
+                            <h3>${title} ${releaseYear}</h3>
+                            <span class="rating">⭐ ${item.vote_average ? item.vote_average.toFixed(1) : '0.0'}</span>
+                        </div>
+                    </a>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        document.getElementById('searchInp').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') searchContent();
+        });
+
+        initApp();
+    </script>
+</body>
+</html>
 
