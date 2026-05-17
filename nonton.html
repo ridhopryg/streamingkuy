@@ -4,30 +4,215 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memutar Film - StreamAuto</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #fff;
+    min-height: 100vh;
+}
+
+header {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    text-align: center;
+    border-bottom: 3px solid #ff6b6b;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.logo a {
+    font-size: 1.5em;
+    color: #ff6b6b;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.logo a:hover {
+    color: #ff5252;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+.player-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.player-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.movie-detail {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 30px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    border-left: 5px solid #ff6b6b;
+}
+
+.movie-detail h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    color: #ff6b6b;
+}
+
+.movie-detail p {
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+.overview {
+    margin-top: 20px;
+    color: #ccc;
+    font-size: 1em;
+}
+
+.recommendations {
+    margin-top: 40px;
+}
+
+.recommendations h3 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    border-left: 4px solid #ff6b6b;
+    padding-left: 10px;
+}
+
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.movie-card {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.movie-card:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+}
+
+.movie-card a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.movie-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    transition: filter 0.3s ease;
+}
+
+.movie-card:hover img {
+    filter: brightness(0.7);
+}
+
+.movie-info {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.movie-info h3 {
+    font-size: 1.1em;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    color: #fff;
+}
+
+.rating {
+    display: inline-block;
+    background: #ff6b6b;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px 20px;
+    font-size: 1.2em;
+    color: #bbb;
+}
+
+@media (max-width: 768px) {
+    .movie-detail h1 {
+        font-size: 1.8em;
+    }
+
+    .movie-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .container {
+        padding: 15px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .movie-detail h1 {
+        font-size: 1.3em;
+    }
+
+    .player-wrapper {
+        margin-bottom: 20px;
+    }
+
+    .movie-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+    }
+}
+    </style>
 </head>
 <body>
 
     <header>
-        <div class="logo"><a href="index.html" style="color: #e50914; text-decoration: none;">← Kembali ke Beranda</a></div>
+        <div class="logo"><a href="index.html">← Kembali ke Beranda</a></div>
     </header>
 
     <main class="container">
-        <!-- Area Pemutar Video VidSrc dengan Proteksi Sandbox Anti-Iklan Redirect -->
         <div class="player-wrapper">
-            <iframe id="vidSrcPlayer" src="" allowfullscreen scrolling="no" sandbox="allow-forms allow-popper-handlers allow-same-origin allow-scripts flex"></iframe>
+            <iframe id="vidSrcPlayer" src="" allowfullscreen scrolling="no" sandbox="allow-forms allow-popper allow-same-origin allow-scripts allow-popups"></iframe>
         </div>
 
-        <!-- Detail Informasi Film Sinkronisasi Otomatis -->
         <div class="movie-detail">
             <h1 id="movieTitle">Memuat Judul...</h1>
             <p id="movieMeta" style="color: #888; font-size: 14px;"></p>
             <p id="movieOverview" class="overview"></p>
         </div>
 
-        <!-- REKOMENDASI FILM SERUPA -->
-        <div class="recommendations" style="margin-top: 40px;">
-            <h3 style="border-left: 4px solid #e50914; padding-left: 10px;">Rekomendasi Film Serupa 🎬</h3>
+        <div class="recommendations">
+            <h3>Rekomendasi Film Serupa 🎬</h3>
             <div id="recommendationGrid" class="movie-grid">
                 <div class="loading">Memuat rekomendasi serupa...</div>
             </div>
@@ -35,64 +220,57 @@
     </main>
 
     <script>
-        // INTEGRASI API KEY TMDB ANDA
         const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e'; 
-        const BASE_URL = 'https://themoviedb.org'; // SUDAH DIPERBAIKI (Wajib menggunakan api.)
-        const EMBED_DOMAIN = 'https://vidsrc-embed.ru'; // Menggunakan domain dokumen baru Anda
+        const BASE_URL = 'https://api.themoviedb.org/3';
+        const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+        const EMBED_DOMAIN = 'https://vidsrc.me';
 
-        // Menangkap parameter ID film dari halaman utama (?id=xxxx)
         const urlParams = new URLSearchParams(window.location.search);
         const movieId = urlParams.get('id');
 
         if (movieId) {
-            // 1. Hubungkan Langsung ke Server VidSrc Sesuai Dokumen Baru Anda
             const player = document.getElementById('vidSrcPlayer');
-            player.src = `${EMBED_DOMAIN}/movie?tmdb=${movieId}&ds_lang=id&autoplay=1`;
+            player.src = `${EMBED_DOMAIN}/embed/movie?tmdb=${movieId}&autoplay=1`;
 
-            // 2. Mengambil Detail Informasi Film dari API TMDB
             fetch(`${BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=id-ID`)
                 .then(res => res.json())
                 .then(movie => {
                     document.getElementById('movieTitle').innerText = movie.title;
                     
-                    // Format penulisan tahun rilis pendek dan skor rating film
                     const releaseYear = movie.release_date ? movie.release_date.split('-')[0] : 'N/A';
-                    document.getElementById('movieMeta').innerText = `Tahun Rilis: ${releaseYear} | Skor Kontribusi: ⭐ ${movie.vote_average.toFixed(1)}`;
+                    document.getElementById('movieMeta').innerText = `Tahun Rilis: ${releaseYear} | Rating: ⭐ ${movie.vote_average ? movie.vote_average.toFixed(1) : '0.0'}`;
                     
-                    document.getElementById('movieOverview').innerText = movie.overview || "Sinopsis belum tersedia dalam Bahasa Indonesia untuk film ini.";
+                    document.getElementById('movieOverview').innerText = movie.overview || "Sinopsis belum tersedia.";
                     document.title = `Nonton ${movie.title} - StreamAuto`;
                 })
                 .catch(err => {
-                    console.error("Gagal memuat detail dari TMDB:", err);
+                    console.error("Error:", err);
                     document.getElementById('movieTitle').innerText = "Gagal Memuat Informasi Film";
                 });
 
-            // 3. Menarik Rekomendasi Film Serupa secara Otomatis dari API TMDB
             fetch(`${BASE_URL}/movie/${movieId}/recommendations?api_key=${TMDB_API_KEY}&language=id-ID`)
                 .then(res => res.json())
                 .then(data => {
                     const grid = document.getElementById('recommendationGrid');
-                    grid.innerHTML = ''; // Menghapus teks loading
+                    grid.innerHTML = '';
                     
                     if(!data.results || data.results.length === 0) {
-                        grid.innerHTML = "<p style='color:#666; grid-column: 1/-1; text-align:center;'>Tidak ada rekomendasi film serupa yang ditemukan.</p>";
+                        grid.innerHTML = "<p style='color:#666; grid-column: 1/-1; text-align:center;'>Tidak ada rekomendasi film serupa.</p>";
                         return;
                     }
 
-                    // Batasi hanya menampilkan maksimal 6 kartu rekomendasi
                     const limitedList = data.results.slice(0, 6);
 
-                    // Loop untuk mencetak kartu film rekomendasi
                     limitedList.forEach(rec => {
-                        const poster = rec.poster_path ? `https://tmdb.org{rec.poster_path}` : 'https://placeholder.com';
+                        const poster = rec.poster_path ? `${IMAGE_BASE_URL}${rec.poster_path}` : 'https://via.placeholder.com/300x450?text=No+Image';
                         const card = document.createElement('div');
                         card.className = 'movie-card';
                         card.innerHTML = `
                             <a href="nonton.html?id=${rec.id}">
-                                <img src="${poster}" alt="${rec.title}" loading="lazy">
+                                <img src="${poster}" alt="${rec.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x450?text=No+Image'">
                                 <div class="movie-info">
                                     <h3>${rec.title}</h3>
-                                    <span class="rating">⭐ ${rec.vote_average.toFixed(1)}</span>
+                                    <span class="rating">⭐ ${rec.vote_average ? rec.vote_average.toFixed(1) : '0.0'}</span>
                                 </div>
                             </a>
                         `;
@@ -100,8 +278,7 @@
                     });
                 })
                 .catch(err => {
-                    console.error("Gagal menarik data rekomendasi:", err);
-                    document.getElementById('recommendationGrid').innerHTML = "";
+                    console.error("Error:", err);
                 });
         } else {
             window.location.href = 'index.html';
