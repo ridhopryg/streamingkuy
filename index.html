@@ -25,7 +25,7 @@
             <input type="text" id="searchInp" placeholder="Cari judul film atau drakor...">
             <button onclick="searchContent()">Cari</button>
             
-            <!-- Filter Negara -->
+            <!-- Filter Negara Asal -->
             <select id="countrySelect" onchange="applyFilters()">
                 <option value="">-- Semua Negara --</option>
                 <option value="ID">🇮🇩 Indonesia</option>
@@ -36,17 +36,17 @@
                 <option value="TH">🇹🇭 Thailand</option>
             </select>
 
-            <!-- Filter Genre -->
+            <!-- Filter Kategori Genre -->
             <select id="genreSelect" onchange="applyFilters()">
                 <option value="">-- Semua Genre --</option>
             </select>
 
-            <!-- Filter Tahun Pembuatan -->
+            <!-- Filter Tahun Rilis -->
             <select id="yearSelect" onchange="applyFilters()">
                 <option value="">-- Semua Tahun --</option>
             </select>
 
-            <!-- Urutkan Berdasarkan -->
+            <!-- Menu Urutan Sortir -->
             <select id="sortSelect" onchange="applyFilters()">
                 <option value="popularity.desc">🔥 Paling Populer</option>
                 <option value="vote_average.desc&vote_count.gte=200">⭐ Rating Tertinggi</option>
@@ -58,15 +58,16 @@
     <main class="container">
         <h2 id="sectionTitle">Sedang Tren Hari Ini 🔥</h2>
         
+        <!-- Grid Tempat Munculnya Kartu Poster Film -->
         <div id="movieGrid" class="movie-grid">
             <div class="loading">Memuat konten terbaru...</div>
         </div>
     </main>
 
     <script>
-        // INTEGRASI API KEY TMDB ANDA
+        // INTEGRASI KUNCI API PERINTAH RESMI TMDB ANDA
         const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e'; 
-        const BASE_URL = 'https://themoviedb.org'; // SUDAH DIPERBAIKI (Wajib menggunakan api.)
+        const BASE_URL = 'https://themoviedb.org'; // FIX: Menggunakan api. untuk izin CORS
         
         let currentCategory = 'movie'; 
 
@@ -84,11 +85,13 @@
             ]
         };
 
+        // Fungsi awal peluncuran aplikasi web
         function initApp() {
             generateYearOptions();
             loadDefault();
         }
 
+        // Loop otomatis mengisi dropdown tahun dari tahun berjalan mundur ke 1990
         function generateYearOptions() {
             const yearSelect = document.getElementById('yearSelect');
             const currentYear = new Date().getFullYear(); 
@@ -100,12 +103,13 @@
             }
         }
 
-        // FUNGSI UTAMA PENARIK DATA YANG SUDAH DIOPTIMALKAN (ANTI-CORS & ANTI-CRASH)
+        // FUNGSI UTAMA PENARIK DATA KE BAL BAL CACHE DAN ANTI CORS
         async function fetchFromTMDB(endpoint) {
             try {
-                // Mendeteksi apakah endpoint sudah membawa tanda tanya (?) dari fungsi filter/discover
                 const separator = endpoint.includes('?') ? '&' : '?';
-                const urlPenuh = `${BASE_URL}${endpoint}${separator}api_key=${TMDB_API_KEY}&language=id-ID`;
+                
+                // KUNCI COCOK: Ditambahkan `_cb=${Date.now()}` untuk memaksa browser membuang cache eror lama
+                const urlPenuh = `${BASE_URL}${endpoint}${separator}api_key=${TMDB_API_KEY}&language=id-ID&_cb=${Date.now()}`;
                 
                 const response = await fetch(urlPenuh);
                 const data = await response.json();
@@ -116,7 +120,7 @@
                 displayContent(data.results);
             } catch (error) {
                 console.error("Error TMDB:", error);
-                document.getElementById('movieGrid').innerHTML = "<div class='loading'>Gagal memuat data. Hubungan API bermasalah.</div>";
+                document.getElementById('movieGrid').innerHTML = "<div class='loading'>Gagal memuat data. Hubungan API bermasalah atau jaringan lambat.</div>";
             }
         }
 
@@ -220,13 +224,15 @@
 
             items.forEach(item => {
                 const title = item.title || item.name;
+                
+                // Menembak langsung ke halaman pemutar serbaguna baru
                 const targetUrl = `stream.html?id=${item.id}&type=${currentCategory}`;
                 const posterPath = item.poster_path 
                     ? `https://tmdb.org{item.poster_path}` 
                     : 'https://placeholder.com';
 
                 const releaseDate = item.release_date || item.first_air_date || '';
-                const releaseYear = releaseDate ? `(${releaseDate.split('-')[0]})` : ''; // Perbaikan penampilan kurung tahun pendek
+                const releaseYear = releaseDate ? `(${releaseDate.split('-')[0]})` : ''; // Hanya memotong angka tahun utamanya saja
 
                 const card = document.createElement('div');
                 card.className = 'movie-card';
@@ -243,15 +249,15 @@
             });
         }
 
+        // Mendengarkan ketukan keyboard enter di kotak cari
         document.getElementById('searchInp').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') searchContent();
         });
-// GANTI DENGAN KODE BARU INI:
-document.addEventListener('DOMContentLoaded', () => {
-    initApp();
-});
 
-        initApp();
+        // Pengaktifan pemicu asinkron yang aman setelah dokumen siap dirender browser
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+        });
     </script>
 </body>
 </html>
