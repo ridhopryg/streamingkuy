@@ -93,30 +93,30 @@
 <body>
 
     <div class="stream-container">
-        <!-- 1. TEMPAT PEMUTAR VIDEO VIDSRC -->
+        <!-- 1. AREA PEMUTAR VIDEO (BERDASARKAN DOKUMENTASI TERBARU) -->
         <div class="player-wrapper">
             <iframe id="vidsrcEngine" src="" allowfullscreen scrolling="no" sandbox="allow-forms allow-popper-handlers allow-same-origin allow-scripts flex"></iframe>
         </div>
 
-        <!-- 2. TOMBOL-TOMBOL NAVIGASI PINTAR -->
+        <!-- 2. TOMBOL NAVIGASI MANUAL (CADANGAN NYATA DI LUAR PLAYER) -->
         <div class="navigation-bar">
             <a href="index.html" class="stream-btn">🏠 Beranda</a>
             
-            <!-- Grup navigasi episode (Hanya muncul/aktif jika tipenya serial 'tv') -->
+            <!-- Muncul otomatis jika tipe konten adalah serial 'tv' -->
             <div class="nav-group" id="tvNavGroup" style="display: none;">
                 <button id="prevEpBtn" class="stream-btn" onclick="navigateEpisode(-1)">⏮️ Episode Seb</button>
                 <button id="nextEpBtn" class="stream-btn primary" onclick="navigateEpisode(1)">Episode Sel ⏭️</button>
             </div>
         </div>
 
-        <!-- 3. DETAIL INFORMASI FILM/SERIAL -->
+        <!-- 3. DETAIL KONTEN DARI DATA TMDB -->
         <div class="content-details">
             <h1 id="streamTitle">Memuat Judul...</h1>
             <div id="streamMeta" class="meta"></div>
             <p id="streamOverview" class="overview"></p>
         </div>
 
-        <!-- 4. REKOMENDASI KONTEN SERUPA -->
+        <!-- 4. REKOMENDASI KONTEN SEJENIS -->
         <h3 class="section-title" id="recTitle">Rekomendasi Serupa 🎬</h3>
         <div id="recommendationGrid" class="movie-grid">
             <div class="loading">Memuat rekomendasi serupa...</div>
@@ -127,6 +127,7 @@
         // KUNCI KONEKSI DATA API TMDB ANDA
         const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e'; 
         const BASE_URL = 'https://themoviedb.org';
+        const EMBED_DOMAIN = 'https://vidsrc-embed.ru'; // Endpoint dokumen baru Anda
 
         // Membaca parameter pelacakan dari URL browser
         const urlParams = new URLSearchParams(window.location.search);
@@ -134,7 +135,7 @@
         const type = urlParams.get('type') || 'movie'; 
         let currentSeason = parseInt(urlParams.get('s')) || 1;
         let currentEpisode = parseInt(urlParams.get('e')) || 1;
-        let maxEpisodesInSeason = 1; // Akan diisi dinamis lewat data TMDB
+        let maxEpisodesInSeason = 1; 
 
         const playerIframe = document.getElementById('vidsrcEngine');
 
@@ -146,18 +147,19 @@
             window.location.href = 'index.html';
         }
 
-        // Fungsi memperbarui link pemutar VidSrc secara akurat
+        // FUNGSI MEMUTAR SESUAI DOKUMENTASI PARAMETER RESMI
         function updatePlayerSource() {
             if (type === 'movie') {
-                playerIframe.src = `https://vidsrcme.su{tmdbId}`;
-                document.getElementById('tvNavGroup').style.display = 'none'; // Sembunyikan navigasi episode
+                // Sesuai Dokumen: /movie?tmdb=385687&ds_lang=de&autoplay=1
+                playerIframe.src = `${EMBED_DOMAIN}/movie?tmdb=${tmdbId}&ds_lang=id&autoplay=1`;
+                document.getElementById('tvNavGroup').style.display = 'none'; 
             } else if (type === 'tv') {
-                playerIframe.src = `https://vidsrcme.su{tmdbId}&season=${currentSeason}&episode=${currentEpisode}`;
-                document.getElementById('tvNavGroup').style.display = 'flex'; // Munculkan navigasi episode
+                // Sesuai Dokumen: /tv?tmdb=1399&season=1&episode=1&ds_lang=de&autoplay=1&autonext=1
+                playerIframe.src = `${EMBED_DOMAIN}/tv?tmdb=${tmdbId}&season=${currentSeason}&episode=${currentEpisode}&ds_lang=id&autoplay=1&autonext=1`;
+                document.getElementById('tvNavGroup').style.display = 'flex'; 
             }
         }
 
-        // Fungsi mengambil data info judul dan sinopsis dari TMDB
         function fetchContentDetails() {
             fetch(`${BASE_URL}/${type}/${tmdbId}?api_key=${TMDB_API_KEY}&language=id-ID`)
                 .then(res => res.json())
@@ -171,11 +173,9 @@
                         document.getElementById('streamTitle').innerText = `${title} (Season ${currentSeason} - Episode ${currentEpisode})`;
                         document.getElementById('streamMeta').innerText = `Rating Serial: ⭐ ${data.vote_average.toFixed(1)}`;
                         
-                        // Tarik info season untuk membatasi navigasi tombol episode
                         const seasonObj = data.seasons.find(s => s.season_number === currentSeason);
                         maxEpisodesInSeason = seasonObj ? seasonObj.episode_count : 24;
                         
-                        // Atur tombol mati/hidup jika sudah di ujung episode
                         document.getElementById('prevEpBtn').disabled = (currentEpisode <= 1);
                         document.getElementById('nextEpBtn').disabled = (currentEpisode >= maxEpisodesInSeason);
                     }
@@ -185,24 +185,19 @@
                 });
         }
 
-        // Fungsi berpindah episode (Mundur/Maju) tanpa merestart halaman web
         function navigateEpisode(direction) {
             currentEpisode += direction;
             
-            // Validasi batas pengoperan angka episode
             if (currentEpisode < 1) currentEpisode = 1;
             if (currentEpisode > maxEpisodesInSeason) currentEpisode = maxEpisodesInSeason;
 
-            // Perbarui URL browser tanpa reload biar rapi
             const newUrl = `?id=${tmdbId}&type=tv&s=${currentSeason}&e=${currentEpisode}`;
             window.history.pushState({ path: newUrl }, '', newUrl);
 
-            // Eksekusi pemutaran data baru
             updatePlayerSource();
             fetchContentDetails();
         }
 
-        // Fungsi mengambil 6 rekomendasi film/serial sejenis
         function fetchRecommendations() {
             document.getElementById('recTitle').innerText = type === 'movie' ? "Rekomendasi Film Serupa 🎬" : "Rekomendasi Serial Serupa 📺";
             
@@ -221,8 +216,6 @@
                     limitedList.forEach(item => {
                         const title = item.title || item.name;
                         const poster = item.poster_path ? `https://tmdb.org{item.poster_path}` : 'https://placeholder.com';
-                        
-                        // Menentukan parameter target klik rekomendasi baru
                         const targetUrl = `stream.html?id=${item.id}&type=${type}`;
 
                         const card = document.createElement('div');
