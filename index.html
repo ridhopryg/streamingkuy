@@ -211,7 +211,10 @@
 
             items.forEach(item => {
                 const title = item.title || item.name;
-                const targetPage = currentCategory === 'movie' ? 'nonton.html' : 'nonton-series.html';
+                
+                // PERUBAHAN UTAMA: Sekarang semua diarahkan ke stream.html dengan parameter tipenya
+                const targetUrl = `stream.html?id=${item.id}&type=${currentCategory}`;
+                
                 const posterPath = item.poster_path 
                     ? `https://tmdb.org{item.poster_path}` 
                     : 'https://placeholder.com';
@@ -222,7 +225,7 @@
                 const card = document.createElement('div');
                 card.className = 'movie-card';
                 card.innerHTML = `
-                    <a href="${targetPage}?id=${item.id}">
+                    <a href="${targetUrl}">
                         <img src="${posterPath}" alt="${title}" loading="lazy">
                         <div class="movie-info">
                             <h3>${title} ${releaseYear}</h3>
@@ -241,4 +244,6 @@
         initApp();
     </script>
 </body>
+</html>
+
 </html>
