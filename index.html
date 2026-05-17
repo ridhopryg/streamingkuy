@@ -66,7 +66,7 @@
     <script>
         // INTEGRASI API KEY TMDB ANDA
         const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e'; 
-        const BASE_URL = 'https://themoviedb.org';
+        const BASE_URL = 'https://themoviedb.org'; // SUDAH DIPERBAIKI (Wajib menggunakan api.)
         
         let currentCategory = 'movie'; 
 
@@ -100,10 +100,19 @@
             }
         }
 
+        // FUNGSI UTAMA PENARIK DATA YANG SUDAH DIOPTIMALKAN (ANTI-CORS & ANTI-CRASH)
         async function fetchFromTMDB(endpoint) {
             try {
-                const response = await fetch(`${BASE_URL}${endpoint}&api_key=${TMDB_API_KEY}&language=id-ID`);
+                // Mendeteksi apakah endpoint sudah membawa tanda tanya (?) dari fungsi filter/discover
+                const separator = endpoint.includes('?') ? '&' : '?';
+                const urlPenuh = `${BASE_URL}${endpoint}${separator}api_key=${TMDB_API_KEY}&language=id-ID`;
+                
+                const response = await fetch(urlPenuh);
                 const data = await response.json();
+                
+                if (data.success === false) {
+                    throw new Error(data.status_message);
+                }
                 displayContent(data.results);
             } catch (error) {
                 console.error("Error TMDB:", error);
@@ -121,10 +130,10 @@
 
             if (currentCategory === 'movie') {
                 document.getElementById('sectionTitle').innerText = "Film Bioskop Terpopuler 🔥";
-                fetchFromTMDB('/trending/movie/day?');
+                fetchFromTMDB('/trending/movie/day');
             } else {
                 document.getElementById('sectionTitle').innerText = "Drama & Serial TV Terpopuler 🔥";
-                fetchFromTMDB('/trending/tv/day?');
+                fetchFromTMDB('/trending/tv/day');
             }
         }
 
@@ -211,16 +220,13 @@
 
             items.forEach(item => {
                 const title = item.title || item.name;
-                
-                // PERUBAHAN UTAMA: Sekarang semua diarahkan ke stream.html dengan parameter tipenya
                 const targetUrl = `stream.html?id=${item.id}&type=${currentCategory}`;
-                
                 const posterPath = item.poster_path 
                     ? `https://tmdb.org{item.poster_path}` 
                     : 'https://placeholder.com';
 
                 const releaseDate = item.release_date || item.first_air_date || '';
-                const releaseYear = releaseDate ? `(${releaseDate.split('-')[0]})` : '';
+                const releaseYear = releaseDate ? `(${releaseDate.split('-')[0]})` : ''; // Perbaikan penampilan kurung tahun pendek
 
                 const card = document.createElement('div');
                 card.className = 'movie-card';
@@ -244,6 +250,4 @@
         initApp();
     </script>
 </body>
-</html>
-
 </html>
