@@ -1,0 +1,420 @@
+/* ==========================================================================
+   1. RESET & VARIABEL UTAMA (Tema Netflix Premium)
+   ========================================================================== */
+:root {
+    --netflix-black: #141414;
+    --netflix-dark: #080808;
+    --netflix-red: #e50914;
+    --netflix-red-hover: #b80710;
+    --text-white: #ffffff;
+    --text-gray: #aaaaaa;
+    --text-light-gray: #e5e5e5;
+    --card-background: #181818;
+    --border-color: #262626;
+    --shadow-color: rgba(0, 0, 0, 0.7);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--netflix-black);
+    color: var(--text-white);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   2. HEADER & LOGO AREA
+   ========================================================================== */
+header {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(20,20,20,0) 100%);
+    background-color: var(--netflix-dark);
+    padding: 30px 20px;
+    text-align: center;
+    border-bottom: 3px solid var(--netflix-red);
+}
+
+.logo {
+    font-size: 38px;
+    font-weight: 900;
+    color: var(--netflix-red);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    user-select: none;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.logo a {
+    color: var(--netflix-red);
+    text-decoration: none;
+}
+
+header p {
+    margin-top: 8px;
+    color: var(--text-gray);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   3. NAVIGASI TABS (Kategori Film & TV)
+   ========================================================================== */
+.nav-tabs {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.tab-btn {
+    padding: 10px 28px;
+    background-color: rgba(0, 0, 0, 0.4);
+    color: var(--text-light-gray);
+    border: 1px solid #444;
+    border-radius: 20px; /* Membuat sudut membulat elegan */
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--text-white);
+    color: var(--text-white);
+}
+
+.tab-btn.active {
+    background-color: var(--netflix-red);
+    border-color: var(--netflix-red);
+    color: var(--text-white);
+    box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+}
+
+/* ==========================================================================
+   4. PANEL PENCARIAN & FILTER RESPONSIF (HP, TAB, LAPTOP)
+   ========================================================================== */
+.search-bar-container {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap; 
+    padding: 0 20px;
+    width: 100%;
+}
+
+.search-bar-container input {
+    padding: 12px 20px;
+    width: 280px; 
+    height: 45px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: var(--text-white);
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.search-bar-container input:focus {
+    border-color: var(--text-white);
+    background-color: rgba(0, 0, 0, 0.9);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+.search-bar-container button {
+    padding: 0 24px;
+    height: 45px;
+    background-color: var(--netflix-red);
+    color: var(--text-white);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-bar-container button:hover {
+    background-color: var(--netflix-red-hover);
+}
+
+.search-bar-container select {
+    padding: 0 15px;
+    height: 45px;
+    min-width: 160px; 
+    background-color: rgba(0, 0, 0, 0.75);
+    color: var(--text-light-gray);
+    border: 1px solid #333;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: none; 
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='10' height='6' viewBox='0 0 10 6'><path fill='%23aaa' d='M0 0l5 5 5-5z'/></svg>"); 
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 35px;
+}
+
+.search-bar-container select:focus {
+    border-color: var(--netflix-red);
+}
+
+/* ==========================================================================
+   5. LAYOUT GRID & KARTU POSTER FILM
+   ========================================================================== */
+.container {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 40px;
+}
+
+h2, h3 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    letter-spacing: 0.5px;
+}
+
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 25px;
+}
+
+.movie-card {
+    background-color: var(--card-background);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease;
+    position: relative;
+}
+
+.movie-card:hover {
+    transform: scale(1.08);
+    box-shadow: 0 12px 25px var(--shadow-color);
+    z-index: 10;
+}
+
+.movie-card a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.movie-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid #202020;
+}
+
+.movie-info {
+    padding: 15px;
+    background-color: var(--card-background);
+}
+
+.movie-info h3 {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text-white);
+}
+
+.rating {
+    color: #46d369; /* Warna hijau khas Netflix Match */
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.loading {
+    text-align: center;
+    grid-column: 1 / -1;
+    padding: 80px 0;
+    color: var(--text-gray);
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   6. HALAMAN STRUKTUR STREAMING PLAYER (`stream.html`)
+   ========================================================================== */
+.player-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* Aspek rasio layar lebar 16:9 */
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    border: 1px solid var(--border-color);
+}
+
+.player-wrapper iframe {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%; border: 0;
+}
+
+.navigation-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    background: #161616;
+    padding: 12px 20px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.nav-group {
+    display: flex;
+    gap: 10px;
+}
+
+.stream-btn {
+    padding: 10px 18px;
+    background-color: #262626;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stream-btn:hover {
+    background-color: #363636;
+}
+
+.stream-btn.primary {
+    background-color: var(--netflix-red);
+}
+
+.stream-btn.primary:hover {
+    background-color: var(--netflix-red-hover);
+}
+
+.stream-btn:disabled {
+    background-color: #1a1a1a;
+    color: #555;
+    cursor: not-allowed;
+}
+
+.movie-detail {
+    margin-top: 25px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 20px;
+}
+
+.movie-detail h1 { 
+    margin: 0 0 8px 0; 
+    font-size: 26px; 
+}
+
+.overview {
+    color: #ccc;
+    line-height: 1.6;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+/* ==========================================================================
+   7. MEDIA QUERIES RESPONSIVITAS DEVICE
+   ========================================================================== */
+
+/* KONDISI UNTUK TABLET (Lebar Maksimal 1024px) */
+@media (max-width: 1024px) {
+    .container {
+        padding: 0 30px;
+    }
+    .search-bar-container {
+        gap: 10px;
+    }
+    .search-bar-container input {
+        width: 240px; 
+    }
+    .search-bar-container select {
+        min-width: 140px;
+    }
+}
+
+/* KONDISI UNTUK SMARTPHONE / HP (Lebar Maksimal 768px) */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 20px;
+        margin: 25px auto;
+    }
+    
+    header {
+        padding: 20px 10px;
+    }
+
+    .logo {
+        font-size: 30px;
+    }
+
+    /* Transformasi Dropdown Filter menjadi Vertikal Penuh di HP */
+    .search-bar-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        margin-top: 15px;
+        padding: 0;
+    }
+
+    .search-bar-container input,
+    .search-bar-container button,
+    .search-bar-container select {
+        width: 100% !important; 
+        max-width: 100%;
+        height: 48px; 
+        font-size: 15px; 
+    }
+
+    .movie-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+    }
+
+    .movie-card img {
+        height: 210px;
+    }
+
+    .navigation-bar {
+        padding: 10px;
+    }
+
+    .stream-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}
