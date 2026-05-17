@@ -9,6 +9,7 @@
 <body>
 
     <header>
+        <!-- Klik logo untuk mereset tampilan ke daftar terpopuler -->
         <div class="logo" onclick="loadDefault()">StreamAuto 🍿</div>
         <p>Update Otomatis Mengikuti Tren Bioskop & Drama Global</p>
         
@@ -29,7 +30,7 @@
                 <option value="">-- Semua Negara --</option>
                 <option value="ID">🇮🇩 Indonesia</option>
                 <option value="US">🇺🇸 Amerika Serikat</option>
-                <option value="KR">__KO__ Korea Selatan</option>
+                <option value="KR">🇰🇷 Korea Selatan</option>
                 <option value="CN">🇨🇳 China</option>
                 <option value="JP">🇯🇵 Jepang</option>
                 <option value="TH">🇹🇭 Thailand</option>
@@ -63,8 +64,8 @@
     </main>
 
     <script>
-        // MASUKKAN API KEY TMDB ANDA DI SINI
-        const TMDB_API_KEY = 'GANTI_DENGAN_API_KEY_TMDB_ANDA'; 
+        // INTEGRASI API KEY TMDB ANDA
+        const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e'; 
         const BASE_URL = 'https://themoviedb.org';
         
         let currentCategory = 'movie'; 
@@ -106,7 +107,7 @@
                 displayContent(data.results);
             } catch (error) {
                 console.error("Error TMDB:", error);
-                document.getElementById('movieGrid').innerHTML = "<div class='loading'>Gagal memuat data. Periksa API Key Anda!</div>";
+                document.getElementById('movieGrid').innerHTML = "<div class='loading'>Gagal memuat data. Hubungan API bermasalah.</div>";
             }
         }
 
@@ -161,20 +162,18 @@
             fetchFromTMDB(`/search/${currentCategory}?query=${encodeURIComponent(query)}`);
         }
 
-        // FILTER GABUNGAN ULTRA LENGKAP (Negara + Genre + Tahun + Urutan)
         function applyFilters() {
             const countryIso = document.getElementById('countrySelect').value;
             const genreId = document.getElementById('genreSelect').value;
             const year = document.getElementById('yearSelect').value;
             const sortBy = document.getElementById('sortSelect').value;
             
-            document.getElementById('searchInp').value = ""; // Reset search text
+            document.getElementById('searchInp').value = ""; 
 
             let titleText = (currentCategory === 'movie') ? "Film" : "Drama/Series";
             let endpoint = `/discover/${currentCategory}?sort_by=${sortBy}`;
 
             if (countryIso) {
-                // TMDB menggunakan 'with_origin_country' untuk menyaring negara asal produksi [5]
                 endpoint += `&with_origin_country=${countryIso}`;
                 const countryName = document.getElementById('countrySelect').options[document.getElementById('countrySelect').selectedIndex].text;
                 titleText += ` [${countryName}]`;
@@ -243,4 +242,3 @@
     </script>
 </body>
 </html>
-
