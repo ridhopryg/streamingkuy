@@ -1,380 +1,111 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streaming Player - StreamAuto</title>
-    <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+<script>
+    const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e'; 
+    const BASE_URL = 'https://api.themoviedb.org/3';
+    const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-body {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    color: #fff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    min-height: 100vh;
-}
+    const urlParams = new URLSearchParams(window.location.search);
+    const tmdbId = urlParams.get('id');
+    const type = urlParams.get('type') || 'movie'; 
+    let currentSeason = parseInt(urlParams.get('s')) || 1;
+    let currentEpisode = parseInt(urlParams.get('e')) || 1;
+    let maxEpisodesInSeason = 1; 
 
-.stream-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
+    const playerIframe = document.getElementById('vidsrcEngine');
 
-.player-wrapper {
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
-    overflow: hidden;
-    border-radius: 10px;
-    background: #000;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-    margin-bottom: 20px;
-}
-
-.player-wrapper iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
-.navigation-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 15px 20px;
-    border-radius: 8px;
-    border-left: 4px solid #ff6b6b;
-}
-
-.nav-group {
-    display: flex;
-    gap: 10px;
-}
-
-.stream-btn {
-    padding: 10px 20px;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: 1px solid #444;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 14px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.stream-btn:hover {
-    background-color: rgba(255, 107, 107, 0.2);
-    border-color: #ff6b6b;
-}
-
-.stream-btn.primary {
-    background-color: #ff6b6b;
-    border-color: #ff6b6b;
-}
-
-.stream-btn.primary:hover {
-    background-color: #ff5252;
-}
-
-.stream-btn:disabled {
-    background-color: rgba(0, 0, 0, 0.3);
-    color: #666;
-    cursor: not-allowed;
-    border-color: #333;
-}
-
-.content-details {
-    background: rgba(0, 0, 0, 0.6);
-    padding: 25px;
-    border-radius: 10px;
-    border-left: 4px solid #ff6b6b;
-    margin-bottom: 30px;
-}
-
-.content-details h1 {
-    margin: 0 0 10px 0;
-    font-size: 2em;
-    color: #ff6b6b;
-}
-
-.content-details .meta {
-    color: #999;
-    font-size: 14px;
-    margin-bottom: 15px;
-}
-
-.content-details .overview {
-    color: #ccc;
-    line-height: 1.6;
-    font-size: 1em;
-}
-
-.section-title {
-    font-size: 1.5em;
-    border-left: 4px solid #ff6b6b;
-    padding-left: 10px;
-    margin: 40px 0 20px 0;
-}
-
-.movie-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-}
-
-.movie-card {
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: 10px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-}
-
-.movie-card:hover {
-    transform: translateY(-10px) scale(1.05);
-    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
-}
-
-.movie-card a {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-}
-
-.movie-card img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    transition: filter 0.3s ease;
-}
-
-.movie-card:hover img {
-    filter: brightness(0.7);
-}
-
-.movie-info {
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.8);
-}
-
-.movie-info h3 {
-    font-size: 1.1em;
-    margin-bottom: 8px;
-    line-height: 1.4;
-}
-
-.rating {
-    display: inline-block;
-    background: #ff6b6b;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 0.9em;
-    font-weight: bold;
-}
-
-.loading {
-    text-align: center;
-    padding: 50px 20px;
-    font-size: 1.2em;
-    color: #666;
-    grid-column: 1 / -1;
-}
-
-@media (max-width: 768px) {
-    .navigation-bar {
-        flex-direction: column;
-        gap: 10px;
+    if (tmdbId) {
+        updatePlayerSource();
+        fetchContentDetails();
+        fetchRecommendations();
+    } else {
+        window.location.href = 'index.html';
     }
 
-    .nav-group {
-        width: 100%;
-    }
-
-    .stream-btn {
-        flex: 1;
-        text-align: center;
-    }
-
-    .content-details h1 {
-        font-size: 1.5em;
-    }
-
-    .movie-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
-    }
-}
-
-@media (max-width: 480px) {
-    .stream-container {
-        padding: 10px;
-    }
-
-    .content-details {
-        padding: 15px;
-    }
-
-    .content-details h1 {
-        font-size: 1.2em;
-    }
-
-    .movie-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 10px;
-    }
-}
-    </style>
-</head>
-<body>
-
-    <div class="stream-container">
-        <div class="player-wrapper">
-            <iframe id="vidsrcEngine" src="" allowfullscreen scrolling="no" sandbox="allow-forms allow-popper allow-same-origin allow-scripts allow-popups"></iframe>
-        </div>
-
-        <div class="navigation-bar">
-            <a href="index.html" class="stream-btn">🏠 Beranda</a>
-            
-            <div class="nav-group" id="tvNavGroup" style="display: none;">
-                <button id="prevEpBtn" class="stream-btn" onclick="navigateEpisode(-1)">⏮️ Episode Seb</button>
-                <button id="nextEpBtn" class="stream-btn primary" onclick="navigateEpisode(1)">Episode Sel ⏭️</button>
-            </div>
-        </div>
-
-        <div class="content-details">
-            <h1 id="streamTitle">Memuat Judul...</h1>
-            <div id="streamMeta" class="meta"></div>
-            <p id="streamOverview" class="overview"></p>
-        </div>
-
-        <h3 class="section-title" id="recTitle">Rekomendasi Serupa 🎬</h3>
-        <div id="recommendationGrid" class="movie-grid">
-            <div class="loading">Memuat rekomendasi serupa...</div>
-        </div>
-    </div>
-
-    <script>
-        const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e'; 
-        const BASE_URL = 'https://api.themoviedb.org/3';
-        const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
-        const EMBED_DOMAIN = 'https://vidsrc.me';
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const tmdbId = urlParams.get('id');
-        const type = urlParams.get('type') || 'movie'; 
-        let currentSeason = parseInt(urlParams.get('s')) || 1;
-        let currentEpisode = parseInt(urlParams.get('e')) || 1;
-        let maxEpisodesInSeason = 1; 
-
-        const playerIframe = document.getElementById('vidsrcEngine');
-
-        if (tmdbId) {
-            updatePlayerSource();
-            fetchContentDetails();
-            fetchRecommendations();
-        } else {
-            window.location.href = 'index.html';
+    function updatePlayerSource() {
+        if (type === 'movie') {
+            // Gunakan provider embed yang stabil
+            playerIframe.src = `https://www.2embed.cc/embed/${tmdbId}`;
+            document.getElementById('tvNavGroup').style.display = 'none'; 
+        } else if (type === 'tv') {
+            playerIframe.src = `https://www.2embed.cc/embedtv/${tmdbId}/${currentSeason}/${currentEpisode}`;
+            document.getElementById('tvNavGroup').style.display = 'flex'; 
         }
+    }
 
-        function updatePlayerSource() {
-            if (type === 'movie') {
-                playerIframe.src = `${EMBED_DOMAIN}/embed/movie?tmdb=${tmdbId}&autoplay=1`;
-                document.getElementById('tvNavGroup').style.display = 'none'; 
-            } else if (type === 'tv') {
-                playerIframe.src = `${EMBED_DOMAIN}/embed/tv?tmdb=${tmdbId}&season=${currentSeason}&episode=${currentEpisode}&autoplay=1`;
-                document.getElementById('tvNavGroup').style.display = 'flex'; 
-            }
-        }
-
-        function fetchContentDetails() {
-            fetch(`${BASE_URL}/${type}/${tmdbId}?api_key=${TMDB_API_KEY}&language=id-ID`)
-                .then(res => res.json())
-                .then(data => {
-                    const title = data.title || data.name;
+    function fetchContentDetails() {
+        fetch(`${BASE_URL}/${type}/${tmdbId}?api_key=${TMDB_API_KEY}&language=id-ID`)
+            .then(res => res.json())
+            .then(data => {
+                const title = data.title || data.name;
+                
+                if (type === 'movie') {
+                    document.getElementById('streamTitle').innerText = title;
+                    document.getElementById('streamMeta').innerText = `Rilis: ${data.release_date || 'N/A'} | Rating: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
+                } else {
+                    document.getElementById('streamTitle').innerText = `${title} (S${currentSeason} E${currentEpisode})`;
+                    document.getElementById('streamMeta').innerText = `Rating: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
                     
-                    if (type === 'movie') {
-                        document.getElementById('streamTitle').innerText = title;
-                        document.getElementById('streamMeta').innerText = `Rilis: ${data.release_date || 'N/A'} | Rating: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
-                    } else {
-                        document.getElementById('streamTitle').innerText = `${title} (S${currentSeason} E${currentEpisode})`;
-                        document.getElementById('streamMeta').innerText = `Rating: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
-                        
-                        if (data.seasons) {
-                            const seasonObj = data.seasons.find(s => s.season_number === currentSeason);
-                            maxEpisodesInSeason = seasonObj ? seasonObj.episode_count : 24;
-                        }
-                        
-                        document.getElementById('prevEpBtn').disabled = (currentEpisode <= 1);
-                        document.getElementById('nextEpBtn').disabled = (currentEpisode >= maxEpisodesInSeason);
+                    if (data.seasons) {
+                        const seasonObj = data.seasons.find(s => s.season_number === currentSeason);
+                        maxEpisodesInSeason = seasonObj ? seasonObj.episode_count : 24;
                     }
                     
-                    document.getElementById('streamOverview').innerText = data.overview || "Sinopsis belum tersedia.";
-                    document.title = `Nonton ${title} - StreamAuto`;
-                })
-                .catch(err => console.error("Error:", err));
-        }
+                    document.getElementById('prevEpBtn').disabled = (currentEpisode <= 1);
+                    document.getElementById('nextEpBtn').disabled = (currentEpisode >= maxEpisodesInSeason);
+                }
+                
+                document.getElementById('streamOverview').innerText = data.overview || "Sinopsis belum tersedia.";
+                document.title = `Nonton ${title} - StreamAuto`;
+            })
+            .catch(err => console.error("Error:", err));
+    }
 
-        function navigateEpisode(direction) {
-            currentEpisode += direction;
-            
-            if (currentEpisode < 1) currentEpisode = 1;
-            if (currentEpisode > maxEpisodesInSeason) currentEpisode = maxEpisodesInSeason;
+    function navigateEpisode(direction) {
+        currentEpisode += direction;
+        
+        if (currentEpisode < 1) currentEpisode = 1;
+        if (currentEpisode > maxEpisodesInSeason) currentEpisode = maxEpisodesInSeason;
 
-            const newUrl = `?id=${tmdbId}&type=tv&s=${currentSeason}&e=${currentEpisode}`;
-            window.history.pushState({ path: newUrl }, '', newUrl);
+        const newUrl = `?id=${tmdbId}&type=tv&s=${currentSeason}&e=${currentEpisode}`;
+        window.history.pushState({ path: newUrl }, '', newUrl);
 
-            updatePlayerSource();
-            fetchContentDetails();
-        }
+        updatePlayerSource();
+        fetchContentDetails();
+    }
 
-        function fetchRecommendations() {
-            document.getElementById('recTitle').innerText = type === 'movie' ? "Rekomendasi Film Serupa 🎬" : "Rekomendasi Serial Serupa 📺";
-            
-            fetch(`${BASE_URL}/${type}/${tmdbId}/recommendations?api_key=${TMDB_API_KEY}&language=id-ID`)
-                .then(res => res.json())
-                .then(data => {
-                    const grid = document.getElementById('recommendationGrid');
-                    grid.innerHTML = '';
-                    
-                    if (!data.results || data.results.length === 0) {
-                        grid.innerHTML = "<p style='color:#666; grid-column: 1/-1;'>Tidak ada rekomendasi serupa.</p>";
-                        return;
-                    }
+    function fetchRecommendations() {
+        document.getElementById('recTitle').innerText = type === 'movie' ? "Rekomendasi Film Serupa 🎬" : "Rekomendasi Serial Serupa 📺";
+        
+        fetch(`${BASE_URL}/${type}/${tmdbId}/recommendations?api_key=${TMDB_API_KEY}&language=id-ID`)
+            .then(res => res.json())
+            .then(data => {
+                const grid = document.getElementById('recommendationGrid');
+                grid.innerHTML = '';
+                
+                if (!data.results || data.results.length === 0) {
+                    grid.innerHTML = "<p style='color:#666; grid-column: 1/-1;'>Tidak ada rekomendasi serupa.</p>";
+                    return;
+                }
 
-                    const limitedList = data.results.slice(0, 6);
-                    limitedList.forEach(item => {
-                        const title = item.title || item.name;
-                        const poster = item.poster_path ? `${IMAGE_BASE_URL}${item.poster_path}` : 'https://via.placeholder.com/300x450?text=No+Image';
-                        const targetUrl = `stream.html?id=${item.id}&type=${type}`;
+                const limitedList = data.results.slice(0, 6);
+                limitedList.forEach(item => {
+                    const title = item.title || item.name;
+                    const poster = item.poster_path ? `${IMAGE_BASE_URL}${item.poster_path}` : 'https://via.placeholder.com/300x450?text=No+Image';
+                    const targetUrl = `stream.html?id=${item.id}&type=${type}`;
 
-                        const card = document.createElement('div');
-                        card.className = 'movie-card';
-                        card.innerHTML = `
-                            <a href="${targetUrl}">
-                                <img src="${poster}" alt="${title}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x450?text=No+Image'">
-                                <div class="movie-info">
-                                    <h3>${title}</h3>
-                                    <span class="rating">⭐ ${item.vote_average ? item.vote_average.toFixed(1) : '0.0'}</span>
-                                </div>
-                            </a>
-                        `;
-                        grid.appendChild(card);
-                    });
-                })
-                .catch(err => console.error("Error:", err));
-        }
-    </script>
-</body>
-</html>
+                    const card = document.createElement('div');
+                    card.className = 'movie-card';
+                    card.innerHTML = `
+                        <a href="${targetUrl}">
+                            <img src="${poster}" alt="${title}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x450?text=No+Image'">
+                            <div class="movie-info">
+                                <h3>${title}</h3>
+                                <span class="rating">⭐ ${item.vote_average ? item.vote_average.toFixed(1) : '0.0'}</span>
+                            </div>
+                        </a>
+                    `;
+                    grid.appendChild(card);
+                });
+            })
+            .catch(err => console.error("Error:", err));
+    }
+</script>
