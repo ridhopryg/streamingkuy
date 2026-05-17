@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memutar Film - StreamAuto</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo"><a href="index.html" style="color: #e50914; text-decoration: none;">← Kembali ke Beranda</a></div>
+    </header>
+
+    <main class="container">
+        <!-- Area Pemutar Video VidSrc dengan Proteksi Sandbox Anti-Iklan Luar -->
+        <div class="player-container">
+            <iframe id="vidSrcPlayer" src="" allowfullscreen scrolling="no" sandbox="allow-forms allow-popper-handlers allow-same-origin allow-scripts flex"></iframe>
+        </div>
+
+        <!-- Detail Informasi Film Singkronisasi Otomatis -->
+        <div class="movie-detail">
+            <h1 id="movieTitle">Memuat Judul...</h1>
+            <p id="movieMeta" style="color: #888; font-size: 14px;"></p>
+            <p id="movieOverview" class="overview"></p>
+        </div>
+
+        <!-- REKOMENDASI FILM SERUPA -->
+        <div class="recommendations" style="margin-top: 40px;">
+            <h3 style="border-left: 4px solid #e50914; padding-left: 10px;">Rekomendasi Film Serupa 🎬</h3>
+            <div id="recommendationGrid" class="movie-grid">
+                <div class="loading">Memuat rekomendasi serupa...</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // INTEGRASI API KEY TMDB ANDA
+        const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e'; 
+        const BASE_URL = 'https://themoviedb.org';
+
+        // Menangkap parameter ID film dari halaman utama (?id=xxxx)
+        const urlParams = new URLSearchParams(window.location.search);
+        const movieId = urlParams.get('id');
+
+        if (movieId) {
+            // 1. Ambil Elemen Iframe dan Hubungkan Langsung ke Server VidSrc
+            const player = document.getElementById('vidSrcPlayer');
+            player.src = `https://vidsrcme.su{movieId}`;
+
+            // 2. Mengambil Detail Informasi Film dari API TMDB Anda
+            fetch(`${BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=id-ID`)
+                .then(res => res.json())
+                .then(movie => {
+                    document.getElementById('movieTitle').innerText = movie.title;
+                    
+                    // Format penulisan tahun dan skor rating film
+                    const releaseYear = movie.release_date ? movie.release_date.split('-')[0] : 'N/A';
+                    document.getElementById('movieMeta').innerText = `Tahun Rilis: ${releaseYear} | Skor Kontribusi: ⭐ ${movie.vote_average.toFixed(1)}`;
+                    
+                    // Menampilkan sinopsis film
+                    document.getElementById('movieOverview').innerText = movie.overview || "Sinopsis belum tersedia dalam Bahasa Indonesia untuk film ini.";
+                    document.title = `Nonton ${movie.title} - StreamAuto`;
+                })
+                .catch(err => {
+                    console.error("Gagal memuat detail dari TMDB:", err);
+                    document.getElementById('movieTitle').innerText = "Gagal Memuat Informasi Film";
+                });
+
+            // 3. Menarik Rekomendasi Film Serupa secara Otomatis dari API TMDB Anda
+            fetch(`${BASE_URL}/movie/${movieId}/recommendations?api_key=${TMDB_API_KEY}&language=id-ID`)
+                .then(res => res.json())
+                .then(data => {
+                    const grid = document.getElementById('recommendationGrid');
+                    grid.innerHTML = ''; // Menghapus teks memuat sebelumnya
+                    
+                    // Batasi hanya menampilkan maksimal 6 kartu rekomendasi biar seimbang di layar
+                    const limitedList = data.results.slice(0, 6);
+                    
+                    if(limitedList.length === 0) {
+                        grid.innerHTML = "<p style='color:#666; grid-column: 1/-1; text-align:center;'>Tidak ada rekomendasi film serupa yang ditemukan.</p>";
+                        return;
+                    }
+
+                    // Loop untuk mencetak kartu film rekomendasi
+                    limitedList.forEach(rec => {
+                        const poster = rec.poster_path ? `https://tmdb.org{rec.poster_path}` : 'https://placeholder.com';
+                        const card = document.createElement('div');
+                        card.className = 'movie-card';
+                        card.innerHTML = `
+                            <a href="nonton.html?id=${rec.id}">
+                                <img src="${poster}" alt="${rec.title}" loading="lazy">
+                                <div class="movie-info">
+                                    <h3>${rec.title}</h3>
+                                    <span class="rating">⭐ ${rec.vote_average.toFixed(1)}</span>
+                                </div>
+                            </a>
+                        `;
+                        grid.appendChild(card);
+                    });
+                })
+                .catch(err => {
+                    console.error("Gagal menarik data rekomendasi:", err);
+                    document.getElementById('recommendationGrid').innerHTML = "";
+                });
+        } else {
+            // Jika halaman diakses tanpa ID film yang valid, tendang balik ke beranda
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
