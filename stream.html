@@ -59,7 +59,7 @@ body {
 
 .control-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 15px;
     margin-bottom: 15px;
 }
@@ -70,7 +70,7 @@ body {
     gap: 8px;
 }
 
-.server-btn, .subtitle-btn {
+.server-btn {
     padding: 8px 14px;
     background-color: rgba(255, 255, 255, 0.1);
     color: #fff;
@@ -83,43 +83,24 @@ body {
     white-space: nowrap;
 }
 
-.server-btn:hover, .subtitle-btn:hover {
+.server-btn:hover {
     background-color: rgba(255, 107, 107, 0.2);
     border-color: #ff6b6b;
 }
 
-.server-btn.active, .subtitle-btn.active {
+.server-btn.active {
     background-color: #ff6b6b;
     border-color: #ff6b6b;
 }
 
-.translation-status {
-    background: rgba(255, 107, 107, 0.1);
-    border: 1px solid #ff6b6b;
+.info-box {
+    background: rgba(255, 165, 0, 0.1);
+    border: 1px solid #ffa500;
     padding: 10px 15px;
     border-radius: 5px;
     font-size: 12px;
     margin-top: 10px;
-    display: none;
-}
-
-.translation-status.active {
-    display: block;
-}
-
-.translation-status.loading {
-    border-color: #ffa500;
     color: #ffa500;
-}
-
-.translation-status.success {
-    border-color: #4caf50;
-    color: #4caf50;
-}
-
-.translation-status.error {
-    border-color: #ff6b6b;
-    color: #ff6b6b;
 }
 
 .navigation-bar {
@@ -282,15 +263,11 @@ body {
 }
 
 @media (max-width: 768px) {
-    .control-row {
-        grid-template-columns: 1fr;
-    }
-
     .control-group {
         flex-direction: column;
     }
 
-    .server-btn, .subtitle-btn {
+    .server-btn {
         width: 100%;
         text-align: center;
     }
@@ -318,51 +295,22 @@ body {
         gap: 15px;
     }
 }
-
-@media (max-width: 480px) {
-    .stream-container {
-        padding: 10px;
-    }
-
-    .content-details {
-        padding: 15px;
-    }
-
-    .content-details h1 {
-        font-size: 1.2em;
-    }
-
-    .movie-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 10px;
-    }
-
-    .server-btn, .subtitle-btn {
-        padding: 6px 10px;
-        font-size: 11px;
-    }
-}
     </style>
 </head>
 <body>
 
     <div class="stream-container">
         <div class="control-panel">
-            <h3>⚙️ Kontrol Player</h3>
-            
+            <h3>⚙️ Pilih Server Player (Total: 13 Server)</h3>
             <div class="control-row">
                 <div>
-                    <div style="margin-bottom: 8px; font-size: 12px; color: #bbb;">🎬 Server Streaming:</div>
+                    <div style="margin-bottom: 8px; font-size: 12px; color: #bbb;">🎬 Klik Server untuk Mengganti Player:</div>
                     <div class="control-group" id="serverButtons"></div>
                 </div>
-                
-                <div>
-                    <div style="margin-bottom: 8px; font-size: 12px; color: #bbb;">📝 Subtitle:</div>
-                    <div class="control-group" id="subtitleButtons"></div>
-                </div>
             </div>
-
-            <div class="translation-status" id="translationStatus"></div>
+            <div class="info-box">
+                💡 <b>Tips Subtitle Indonesia:</b> Klik tombol <b>Play</b> terlebih dahulu pada video, lalu cari dan klik ikon <b>"CC"</b> atau lambang <b>Roda Gigi (Settings)</b> di pojok kanan bawah internal player, kemudian pilih bahasa <b>Indonesian / Indonesia</b>.
+            </div>
         </div>
 
         <div id="errorMsg"></div>
@@ -373,7 +321,6 @@ body {
 
         <div class="navigation-bar">
             <a href="index.html" class="stream-btn">🏠 Beranda</a>
-            
             <div class="nav-group" id="tvNavGroup" style="display: none;">
                 <button id="prevEpBtn" class="stream-btn" onclick="navigateEpisode(-1)">⏮️ Episode Seb</button>
                 <button id="nextEpBtn" class="stream-btn primary" onclick="navigateEpisode(1)">Episode Sel ⏭️</button>
@@ -397,40 +344,74 @@ body {
         const BASE_URL = 'https://api.themoviedb.org/3';
         const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-        // Server Streaming
+        // 13 Pilihan Server Embed (Dukungan Subtitle Indonesia Global & File ID Hosting)
         const STREAMING_SERVERS = [
             {
-                name: 'VidSrc Pro',
+                name: 'Server 1 - VidSrc Pro',
                 movie: (id) => `https://vidsrc.pro/embed/movie/${id}`,
                 tv: (id, s, e) => `https://vidsrc.pro/embed/tv/${id}/${s}/${e}`,
             },
             {
-                name: '2Embed',
-                movie: (id) => `https://www.2embed.cc/embed/${id}`,
-                tv: (id, s, e) => `https://www.2embed.cc/embedtv/${id}/${s}/${e}`,
+                name: 'Server 2 - VidSrc To',
+                movie: (id) => `https://vidsrc.to/embed/movie/${id}`,
+                tv: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}`,
             },
             {
-                name: 'Embed.su',
+                name: 'Server 3 - VidSrc Me',
+                movie: (id) => `https://vidsrc.me/embed/movie?tmdb=${id}`,
+                tv: (id, s, e) => `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}`,
+            },
+            {
+                name: 'Server 4 - SuperEmbed',
+                movie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`,
+                tv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`,
+            },
+            {
+                name: 'Server 5 - Embed.su',
                 movie: (id) => `https://embed.su/embed/movie/${id}`,
                 tv: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}`,
             },
             {
-                name: 'DbGo',
+                name: 'Server 6 - 2Embed VIP',
+                movie: (id) => `https://www.2embed.cc/embed/${id}`,
+                tv: (id, s, e) => `https://www.2embed.cc/embedtv/${id}/${s}/${e}`,
+            },
+            {
+                name: 'Server 7 - Noverse NL',
+                movie: (id) => `https://player.vidsrc.nl/embed/movie/${id}`,
+                tv: (id, s, e) => `https://player.vidsrc.nl/embed/tv/${id}/${s}/${e}`,
+            },
+            {
+                name: 'Server 8 - VidSrc CC',
+                movie: (id) => `https://vidsrc.cc/v2/embed/movie/${id}`,
+                tv: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}`,
+            },
+            {
+                name: 'Server 9 - Moviesapi',
+                movie: (id) => `https://moviesapi.club/movie/${id}`,
+                tv: (id, s, e) => `https://moviesapi.club/tv/${id}-${s}-${e}`,
+            },
+            {
+                name: 'Server 10 - Autoembed',
+                movie: (id) => `https://autoembed.cc/embed/movie/${id}`,
+                tv: (id, s, e) => `https://autoembed.cc/embed/tv/${id}/${s}/${e}`,
+            },
+            {
+                name: 'Server 11 - DbGo Fun',
                 movie: (id) => `https://www.dbgo.fun/embed/movie/${id}`,
                 tv: (id, s, e) => `https://www.dbgo.fun/embed/tv/${id}/${s}/${e}`,
             },
             {
-                name: 'Autoembed',
-                movie: (id) => `https://autoembed.cc/embed/movie/${id}`,
-                tv: (id, s, e) => `https://autoembed.cc/embed/tv/${id}/${s}/${e}`,
+                name: 'Server 12 - Vidsrc xyz',
+                movie: (id) => `https://vidsrc.xyz/embed/movie/${id}`,
+                tv: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}`,
+            },
+            {
+                name: 'Server 13 - Doodstream*',
+                // Menggunakan File ID Mandiri di parameter URL ?id=
+                movie: (id) => `https://dood.li/e/${id}`, 
+                tv: (id, s, e) => `https://dood.li/e/${id}?season=${s}&episode=${e}`,
             }
-        ];
-
-        // Subtitle Options
-        const SUBTITLE_OPTIONS = [
-            { name: 'Tidak Ada', value: 'off' },
-            { name: '🇮🇩 Bahasa Indonesia', value: 'id' },
-            { name: '🇬🇧 English', value: 'en' }
         ];
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -439,9 +420,7 @@ body {
         let currentSeason = parseInt(urlParams.get('s')) || 1;
         let currentEpisode = parseInt(urlParams.get('e')) || 1;
         let currentServerIndex = parseInt(urlParams.get('server')) || 0;
-        let currentSubtitleLang = 'off';
         let maxEpisodesInSeason = 1;
-        let isAutoTranslateActive = false;
 
         const playerIframe = document.getElementById('vidsrcEngine');
 
@@ -450,13 +429,11 @@ body {
             updatePlayerSource();
             fetchContentDetails();
             fetchRecommendations();
-            checkAndEnableAutoTranslate();
         } else {
             window.location.href = 'index.html';
         }
 
         function initializeControls() {
-            // Server Buttons
             const serverContainer = document.getElementById('serverButtons');
             serverContainer.innerHTML = '';
             STREAMING_SERVERS.forEach((server, index) => {
@@ -466,17 +443,6 @@ body {
                 btn.onclick = () => switchServer(index);
                 serverContainer.appendChild(btn);
             });
-
-            // Subtitle Buttons
-            const subtitleContainer = document.getElementById('subtitleButtons');
-            subtitleContainer.innerHTML = '';
-            SUBTITLE_OPTIONS.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = `subtitle-btn ${opt.value === currentSubtitleLang ? 'active' : ''}`;
-                btn.innerText = opt.name;
-                btn.onclick = () => switchSubtitle(opt.value);
-                subtitleContainer.appendChild(btn);
-            });
         }
 
         function switchServer(index) {
@@ -485,19 +451,10 @@ body {
                 btn.classList.toggle('active', i === currentServerIndex);
             });
             updatePlayerSource();
-            showErrorMsg('');
-        }
-
-        function switchSubtitle(lang) {
-            currentSubtitleLang = lang;
-            document.querySelectorAll('.subtitle-btn').forEach((btn, i) => {
-                btn.classList.toggle('active', SUBTITLE_OPTIONS[i].value === lang);
-            });
         }
 
         function updatePlayerSource() {
             const server = STREAMING_SERVERS[currentServerIndex];
-            
             if (!server) return;
 
             try {
@@ -510,7 +467,7 @@ body {
                 }
                 showErrorMsg('');
             } catch (err) {
-                showErrorMsg('Error mengload player: ' + err.message);
+                showErrorMsg('Error memuat player: ' + err.message);
             }
         }
 
@@ -523,205 +480,25 @@ body {
             }
         }
 
-        function showTranslationStatus(msg, status = 'active') {
-            const container = document.getElementById('translationStatus');
-            if (msg) {
-                container.innerText = msg;
-                container.className = `translation-status ${status}`;
-            } else {
-                container.className = 'translation-status';
-            }
-        }
-
-        // MyMemory Translation API
-        async function translateWithMyMemory(text) {
-            try {
-                const response = await fetch(
-                    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|id`,
-                    {
-                        headers: {
-                            'User-Agent': 'StreamAuto'
-                        }
-                    }
-                );
-                const data = await response.json();
-                return data.responseData.translatedText;
-            } catch (err) {
-                console.error('MyMemory error:', err);
-                return null;
-            }
-        }
-
-        // LibreTranslate API
-        async function translateWithLibreTranslate(text) {
-            try {
-                const response = await fetch('https://libretranslate.de/translate', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        q: text,
-                        source: 'auto',
-                        target: 'id'
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                const data = await response.json();
-                return data.translatedText;
-            } catch (err) {
-                console.error('LibreTranslate error:', err);
-                return null;
-            }
-        }
-
-        // Detect language
-        async function detectLanguage(text) {
-            try {
-                // Simple detection - cek apakah mengandung huruf Indonesia/Melayu
-                const indonesianWords = ['dan', 'yang', 'di', 'ke', 'dari', 'untuk', 'dengan', 'adalah', 'ini', 'itu', 'pada', 'oleh', 'atau', 'telah', 'akan'];
-                const words = text.toLowerCase().split(/\s+/);
-                const matchCount = words.filter(w => indonesianWords.includes(w)).length;
-                
-                if (matchCount > words.length * 0.1) {
-                    return 'id'; // Indonesian
-                }
-                return 'en'; // English or other
-            } catch (err) {
-                return 'en';
-            }
-        }
-
-        // Check dan auto enable translate
-        async function checkAndEnableAutoTranslate() {
-            showTranslationStatus('🔍 Memeriksa bahasa subtitle...', 'loading');
-            
-            // Tunggu sedikit untuk iframe load
-            setTimeout(async () => {
-                try {
-                    // Coba detect bahasa dari streaming
-                    // Untuk sekarang, kita assume English dan auto-translate
-                    
-                    // Jika ingin lebih advanced, bisa fetch subtitle data dari TMDB
-                    const langDetected = 'en'; // Default: anggap English
-                    
-                    if (langDetected !== 'id') {
-                        enableAutoTranslate();
-                    } else {
-                        showTranslationStatus('✅ Subtitle sudah Bahasa Indonesia', 'success');
-                    }
-                } catch (err) {
-                    console.error('Error checking language:', err);
-                    enableAutoTranslate(); // Fallback: selalu enable auto translate
-                }
-            }, 2000);
-        }
-
-        async function enableAutoTranslate() {
-            if (isAutoTranslateActive) return;
-            isAutoTranslateActive = true;
-
-            showTranslationStatus('⏳ Mengaktifkan Auto Translate Bahasa Indonesia (MyMemory + LibreTranslate)...', 'loading');
-            
-            setTimeout(() => {
-                try {
-                    // Inject subtitle translator
-                    const translatorScript = document.createElement('script');
-                    translatorScript.innerHTML = `
-                        (function() {
-                            const subtitleCache = new Map();
-                            
-                            // Override subtitle display
-                            const originalAddSubtitle = window.addSubtitle || function() {};
-                            
-                            // Listen untuk subtitle elements
-                            const observer = new MutationObserver(async (mutations) => {
-                                mutations.forEach((mutation) => {
-                                    mutation.addedNodes.forEach((node) => {
-                                        // Cek apakah ada text subtitle
-                                        const subtitleText = node.textContent || node.innerText;
-                                        
-                                        if (subtitleText && subtitleText.length > 0 && subtitleText.length < 500) {
-                                            // Hindari duplicate translation
-                                            if (!subtitleCache.has(subtitleText)) {
-                                                subtitleCache.set(subtitleText, true);
-                                                
-                                                // Emit event untuk translate
-                                                window.dispatchEvent(new CustomEvent('need-translate', {
-                                                    detail: { 
-                                                        text: subtitleText,
-                                                        element: node
-                                                    }
-                                                }));
-                                            }
-                                        }
-                                    });
-                                });
-                            });
-
-                            // Observe player container
-                            observer.observe(document.body, {
-                                childList: true,
-                                subtree: true,
-                                characterData: false
-                            });
-                        })();
-                    `;
-                    document.head.appendChild(translatorScript);
-
-                    // Listen untuk translate events
-                    let translateQueue = [];
-                    let isTranslating = false;
-
-                    window.addEventListener('need-translate', async (e) => {
-                        const { text, element } = e.detail;
-                        
-                        if (translateQueue.includes(text)) return; // Hindari queue duplicate
-                        translateQueue.push(text);
-
-                        if (!isTranslating && text.trim()) {
-                            isTranslating = true;
-                            
-                            try {
-                                // Coba MyMemory dulu (lebih cepat)
-                                let translated = await translateWithMyMemory(text);
-                                
-                                // Jika gagal, coba LibreTranslate
-                                if (!translated) {
-                                    translated = await translateWithLibreTranslate(text);
-                                }
-                                
-                                if (translated && element) {
-                                    // Replace text dengan translation
-                                    if (element.textContent) {
-                                        element.textContent = translated;
-                                    } else if (element.innerText) {
-                                        element.innerText = translated;
-                                    }
-                                    
-                                    console.log('Translated:', text, '→', translated);
-                                }
-                            } catch (err) {
-                                console.error('Translation error:', err);
-                            }
-                            
-                            translateQueue = [];
-                            isTranslating = false;
-                        }
-                    });
-
-                    showTranslationStatus('✅ Auto Translate Aktif - Subtitle diterjemahkan otomatis ke Bahasa Indonesia', 'success');
-                } catch (err) {
-                    console.error('Error enabling translate:', err);
-                    showTranslationStatus('⚠️ Auto Translate siap - Gunakan extension "Video Translate" untuk hasil optimal', 'error');
-                }
-            }, 800);
-        }
-
         function fetchContentDetails() {
-            fetch(`${BASE_URL}/${type}/${tmdbId}?api_key=${TMDB_API_KEY}&language=id-ID`)
+            // Melibatkan parameter &include_adult=true agar konten dewasa TMDB dapat terbaca sempurna
+            fetch(`${BASE_URL}/${type}/${tmdbId}?api_key=${TMDB_API_KEY}&language=id-ID&include_adult=true`)
                 .then(res => res.json())
                 .then(data => {
                     const title = data.title || data.name;
+                    if (!title) {
+                        // Fallback jika tidak ditemukan data bahasa Indonesia
+                        return fetch(`${BASE_URL}/${type}/${tmdbId}?api_key=${TMDB_API_KEY}&include_adult=true`);
+                    }
+                    return data;
+                })
+                .then(res => (res.json ? res.json() : res))
+                .then(data => {
+                    const title = data.title || data.name;
+                    if(!title) {
+                        document.getElementById('streamTitle').innerText = "Konten Khusus / Berkas ID Luar";
+                        return;
+                    }
                     
                     if (type === 'movie') {
                         document.getElementById('streamTitle').innerText = title;
@@ -739,18 +516,17 @@ body {
                         document.getElementById('nextEpBtn').disabled = (currentEpisode >= maxEpisodesInSeason);
                     }
                     
-                    document.getElementById('streamOverview').innerText = data.overview || "Sinopsis belum tersedia.";
+                    document.getElementById('streamOverview').innerText = data.overview || "Sinopsis tidak tersedia untuk judul ini.";
                     document.title = `Nonton ${title} - StreamAuto`;
                 })
                 .catch(err => {
                     console.error("Error:", err);
-                    showErrorMsg('Gagal memuat detail konten');
+                    document.getElementById('streamTitle').innerText = "Streaming Player";
                 });
         }
 
         function navigateEpisode(direction) {
             currentEpisode += direction;
-            
             if (currentEpisode < 1) currentEpisode = 1;
             if (currentEpisode > maxEpisodesInSeason) currentEpisode = maxEpisodesInSeason;
 
@@ -764,7 +540,8 @@ body {
         function fetchRecommendations() {
             document.getElementById('recTitle').innerText = type === 'movie' ? "Rekomendasi Film Serupa 🎬" : "Rekomendasi Serial Serupa 📺";
             
-            fetch(`${BASE_URL}/${type}/${tmdbId}/recommendations?api_key=${TMDB_API_KEY}&language=id-ID`)
+            // Menyertakan include_adult=true pada rekomendasi agar menghasilkan film sejenis yang relevan
+            fetch(`${BASE_URL}/${type}/${tmdbId}/recommendations?api_key=${TMDB_API_KEY}&language=id-ID&include_adult=true`)
                 .then(res => res.json())
                 .then(data => {
                     const grid = document.getElementById('recommendationGrid');
@@ -779,7 +556,7 @@ body {
                     limitedList.forEach(item => {
                         const title = item.title || item.name;
                         const poster = item.poster_path ? `${IMAGE_BASE_URL}${item.poster_path}` : 'https://via.placeholder.com/300x450?text=No+Image';
-                        const targetUrl = `stream.html?id=${item.id}&type=${type}&server=${currentServerIndex}`;
+                        const targetUrl = `?id=${item.id}&type=${type}&server=${currentServerIndex}`;
 
                         const card = document.createElement('div');
                         card.className = 'movie-card';
@@ -795,11 +572,6 @@ body {
                         grid.appendChild(card);
                     });
                 })
-                .catch(err => console.error("Error:", err));
-        }
-    </script>
-</body>
-</html>
                 .catch(err => console.error("Error:", err));
         }
     </script>
