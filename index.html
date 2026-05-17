@@ -4,28 +4,337 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StreamAuto - Filter Negara, Genre & Tahun</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #fff;
+    min-height: 100vh;
+}
+
+header {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    text-align: center;
+    border-bottom: 3px solid #ff6b6b;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.logo {
+    font-size: 2.5em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.1);
+}
+
+header p {
+    font-size: 0.95em;
+    color: #bbb;
+    margin-bottom: 15px;
+}
+
+.nav-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    font-size: 1em;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 107, 107, 0.2);
+    border-color: #ff6b6b;
+}
+
+.tab-btn.active {
+    background: #ff6b6b;
+    border-color: #ff6b6b;
+}
+
+.search-bar-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+}
+
+input[type="text"],
+select {
+    padding: 12px;
+    font-size: 0.95em;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]::placeholder {
+    color: #999;
+}
+
+input[type="text"]:focus,
+select:focus {
+    outline: none;
+    border-color: #ff6b6b;
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+}
+
+button {
+    padding: 12px 20px;
+    font-size: 0.95em;
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: #ff5252;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+h2 {
+    font-size: 2em;
+    margin-bottom: 25px;
+    text-align: center;
+    color: #ff6b6b;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.movie-card {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.movie-card:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+}
+
+.movie-card a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.movie-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    transition: filter 0.3s ease;
+}
+
+.movie-card:hover img {
+    filter: brightness(0.7);
+}
+
+.movie-info {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.movie-info h3 {
+    font-size: 1.1em;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    color: #fff;
+}
+
+.rating {
+    display: inline-block;
+    background: #ff6b6b;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px 20px;
+    font-size: 1.2em;
+    color: #bbb;
+}
+
+@media (max-width: 1200px) {
+    .movie-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        padding: 15px;
+    }
+
+    .logo {
+        font-size: 2em;
+    }
+
+    .search-bar-container {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .movie-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .movie-card img {
+        height: 250px;
+    }
+
+    h2 {
+        font-size: 1.5em;
+    }
+
+    .nav-tabs {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        font-size: 1.5em;
+    }
+
+    .search-bar-container {
+        grid-template-columns: 1fr;
+    }
+
+    .movie-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+    }
+
+    .movie-card img {
+        height: 200px;
+    }
+
+    .movie-info h3 {
+        font-size: 0.9em;
+    }
+
+    h2 {
+        font-size: 1.2em;
+    }
+
+    button {
+        padding: 10px 15px;
+        font-size: 0.85em;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a2e;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ff6b6b;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ff5252;
+}
+
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 18px;
+    padding-right: 35px;
+}
+
+option {
+    background: #16213e;
+    color: #fff;
+}
+    </style>
 </head>
 <body>
 
     <header>
-        <!-- Klik logo untuk mereset tampilan ke daftar terpopuler -->
         <div class="logo" onclick="loadDefault()">StreamAuto 🍿</div>
         <p>Update Otomatis Mengikuti Tren Bioskop & Drama Global</p>
         
-        <!-- Navigasi Kategori Utama -->
         <div class="nav-tabs">
             <button id="btnMovie" class="tab-btn active" onclick="switchCategory('movie')">🎥 Film Bioskop</button>
             <button id="btnTV" class="tab-btn" onclick="switchCategory('tv')">📺 Drama & Serial TV</button>
         </div>
 
-        <!-- PANEL FILTER LENGKAP -->
         <div class="search-bar-container">
-            <!-- Kolom Searching Film -->
             <input type="text" id="searchInp" placeholder="Cari judul film atau drakor...">
             <button onclick="searchContent()">Cari</button>
             
-            <!-- Filter Negara Asal -->
             <select id="countrySelect" onchange="applyFilters()">
                 <option value="">-- Semua Negara --</option>
                 <option value="ID">🇮🇩 Indonesia</option>
@@ -36,17 +345,14 @@
                 <option value="TH">🇹🇭 Thailand</option>
             </select>
 
-            <!-- Filter Kategori Genre -->
             <select id="genreSelect" onchange="applyFilters()">
                 <option value="">-- Semua Genre --</option>
             </select>
 
-            <!-- Filter Tahun Rilis -->
             <select id="yearSelect" onchange="applyFilters()">
                 <option value="">-- Semua Tahun --</option>
             </select>
 
-            <!-- Menu Urutan Sortir -->
             <select id="sortSelect" onchange="applyFilters()">
                 <option value="popularity.desc">🔥 Paling Populer</option>
                 <option value="vote_average.desc&vote_count.gte=200">⭐ Rating Tertinggi</option>
@@ -58,16 +364,15 @@
     <main class="container">
         <h2 id="sectionTitle">Sedang Tren Hari Ini 🔥</h2>
         
-        <!-- Grid Tempat Munculnya Kartu Poster Film -->
         <div id="movieGrid" class="movie-grid">
             <div class="loading">Memuat konten terbaru...</div>
         </div>
     </main>
 
     <script>
-        // INTEGRASI KUNCI API PERINTAH RESMI TMDB ANDA
         const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e'; 
-        const BASE_URL = 'https://themoviedb.org'; // FIX: Menggunakan api. untuk izin CORS
+        const BASE_URL = 'https://api.themoviedb.org/3';
+        const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
         
         let currentCategory = 'movie'; 
 
@@ -85,13 +390,12 @@
             ]
         };
 
-        // Fungsi awal peluncuran aplikasi web
         function initApp() {
             generateYearOptions();
+            updateGenreDropdown();
             loadDefault();
         }
 
-        // Loop otomatis mengisi dropdown tahun dari tahun berjalan mundur ke 1990
         function generateYearOptions() {
             const yearSelect = document.getElementById('yearSelect');
             const currentYear = new Date().getFullYear(); 
@@ -103,24 +407,42 @@
             }
         }
 
-        // FUNGSI UTAMA PENARIK DATA KE BAL BAL CACHE DAN ANTI CORS
         async function fetchFromTMDB(endpoint) {
             try {
                 const separator = endpoint.includes('?') ? '&' : '?';
+                const urlPenuh = `${BASE_URL}${endpoint}${separator}api_key=${TMDB_API_KEY}&language=id-ID`;
                 
-                // KUNCI COCOK: Ditambahkan `_cb=${Date.now()}` untuk memaksa browser membuang cache eror lama
-                const urlPenuh = `${BASE_URL}${endpoint}${separator}api_key=${TMDB_API_KEY}&language=id-ID&_cb=${Date.now()}`;
+                console.log("Fetching:", urlPenuh);
                 
                 const response = await fetch(urlPenuh);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status}`);
+                }
+                
                 const data = await response.json();
                 
                 if (data.success === false) {
-                    throw new Error(data.status_message);
+                    throw new Error(data.status_message || "API Error");
                 }
-                displayContent(data.results);
+                
+                displayContent(data.results || []);
             } catch (error) {
                 console.error("Error TMDB:", error);
-                document.getElementById('movieGrid').innerHTML = "<div class='loading'>Gagal memuat data. Hubungan API bermasalah atau jaringan lambat.</div>";
+                document.getElementById('movieGrid').innerHTML = `
+                    <div class='loading' style='color: red;'>
+                        ❌ Gagal memuat data. 
+                        <br><br>
+                        Error: ${error.message}
+                        <br><br>
+                        Pastikan:
+                        <ul style='text-align: left;'>
+                            <li>API Key TMDB masih valid</li>
+                            <li>Koneksi internet stabil</li>
+                            <li>Tidak ada pembatasan CORS</li>
+                        </ul>
+                    </div>
+                `;
             }
         }
 
@@ -224,21 +546,19 @@
 
             items.forEach(item => {
                 const title = item.title || item.name;
-                
-                // Menembak langsung ke halaman pemutar serbaguna baru
                 const targetUrl = `stream.html?id=${item.id}&type=${currentCategory}`;
                 const posterPath = item.poster_path 
-                    ? `https://tmdb.org{item.poster_path}` 
-                    : 'https://placeholder.com';
+                    ? `${IMAGE_BASE_URL}${item.poster_path}`
+                    : 'https://via.placeholder.com/300x450?text=No+Image';
 
                 const releaseDate = item.release_date || item.first_air_date || '';
-                const releaseYear = releaseDate ? `(${releaseDate.split('-')[0]})` : ''; // Hanya memotong angka tahun utamanya saja
+                const releaseYear = releaseDate ? `(${releaseDate.split('-')[0]})` : '';
 
                 const card = document.createElement('div');
                 card.className = 'movie-card';
                 card.innerHTML = `
                     <a href="${targetUrl}">
-                        <img src="${posterPath}" alt="${title}" loading="lazy">
+                        <img src="${posterPath}" alt="${title}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x450?text=No+Image'">
                         <div class="movie-info">
                             <h3>${title} ${releaseYear}</h3>
                             <span class="rating">⭐ ${item.vote_average ? item.vote_average.toFixed(1) : '0.0'}</span>
@@ -249,12 +569,10 @@
             });
         }
 
-        // Mendengarkan ketukan keyboard enter di kotak cari
         document.getElementById('searchInp').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') searchContent();
         });
 
-        // Pengaktifan pemicu asinkron yang aman setelah dokumen siap dirender browser
         document.addEventListener('DOMContentLoaded', () => {
             initApp();
         });
