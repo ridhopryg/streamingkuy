@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memutar Serial & Drama - StreamAuto</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Gaya Khusus Area Kontrol Episode dan Season */
+        .series-control-container { 
+            margin-top: 25px; 
+            background: #1f1f1f; 
+            padding: 20px; 
+            border-radius: 8px; 
+            border: 1px solid #333; 
+        }
+        .season-selector-wrapper {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .season-select {
+            padding: 8px 15px;
+            background-color: #333;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+        }
+        .season-select:focus {
+            border-color: #e50914;
+        }
+        .episode-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); 
+            gap: 10px; 
+            margin-top: 15px; 
+        }
+        .ep-btn { 
+            padding: 12px; 
+            background: #333; 
+            border: none; 
+            color: #fff; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            text-align: center; 
+            font-weight: bold; 
+            font-size: 14px; 
+            transition: all 0.2s; 
+        }
+        .ep-btn:hover { background: #e50914; }
+        .ep-btn.active { background: #e50914; box-shadow: 0 0 10px #e50914; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo"><a href="index.html" style="color: #e50914; text-decoration: none;">← Kembali ke Beranda</a></div>
+    </header>
+
+    <main class="container">
+        <!-- Area Pemutar Video VidSrc TV Format -->
+        <div class="player-container">
+            <iframe id="seriesPlayer" src="" allowfullscreen scrolling="no" sandbox="allow-forms allow-popper-handlers allow-same-origin allow-scripts flex"></iframe>
+        </div>
+
+        <!-- Panel Kontrol Season & Episode Otomatis -->
+        <div class="series-control-container">
+            <div class="season-selector-wrapper">
+                <label for="seasonSelect" style="font-weight: bold; color: #fff;">Pilih Musim (Season):</label>
+                <select id="seasonSelect" class="season-select" onchange="changeSeason()">
+                    <!-- Opsi Season akan diisi otomatis oleh JavaScript -->
+                </select>
+            </div>
+            
+            <h3 style="margin: 20px 0 0 0; color: #fff; border-top: 1px solid #333; padding-top: 15px;">Pilih Episode 📺</h3>
+            <div id="episodeGrid" class="episode-grid">
+                <div style="color: #888;">Menghitung episode...</div>
+            </div>
+        </div>
+
+        <!-- Detail Drama/Series -->
+        <div class="movie-detail">
+            <h1 id="seriesTitle">Memuat Judul Serial...</h1>
+            <p id="seriesMeta" style="color: #888; font-size: 14px;"></p>
+            <p id="seriesOverview" class="overview"></p>
+        </div>
+    </main>
+
+    <script>
+        // INTEGRASI API KEY TMDB ANDA
+        const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e'; 
+        const BASE_URL = 'https://themoviedb.org';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const seriesId = urlParams.get('id');
+        let currentSeason = parseInt(urlParams.get('season')) || 1; 
+        let globalSeasonsData = [];
+
+        if (seriesId) {
+            // 1. Tarik detail data serial global (Netflix/Drakor/C-Drama) dari TMDB
+            fetch(`${BASE_URL}/tv/${seriesId}?api_key=${TMDB_API_KEY}&language=id-ID`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('seriesTitle').innerText = data.name;
+                    document.getElementById('seriesOverview').innerText = data.overview || "Sinopsis tidak tersedia dalam Bahasa Indonesia.";
+                    document.getElementById('seriesMeta').innerText = `Asal Negara: ${data.origin_country.join(', ')} | Nilai Rating: ⭐ ${data.vote_average.toFixed(1)}`;
+                    document.title = `Nonton ${data.name} - StreamAuto`;
+
+                    // Simpan data semua season untuk referensi dropdown
+                    // Memfilter agar 'Season 0' (biasanya berisi video tambahan/spesial) tidak ikut muncul
+                    globalSeasonsData = data.seasons.filter(s => s.season_number > 0);
+                    
+                    generateSeasonDropdown();
+                    loadSeasonEpisodes(currentSeason);
+                })
+                .catch(err => {
+                    console.error("Gagal memuat detail series:", err);
+                    document.getElementById('seriesTitle').innerText = "Gagal Memuat Konten";
+                });
+        } else {
+            window.location.href = 'index.html';
+        }
+
+        // Fungsi membuat daftar dropdown pilihan Season secara dinamis
+        function generateSeasonDropdown() {
+            const select = document.getElementById('seasonSelect');
+            select.innerHTML = '';
+
+            globalSeasonsData.forEach(season => {
+                const option = document.createElement('option');
+                option.value = season.season_number;
+                option.innerText = `Season ${season.season_number} (${season.episode_count} Eps)`;
+                if (season.season_number === currentSeason) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+        }
+
+        // Event handler saat pengguna mengganti pilihan Season di menu dropdown
+        function changeSeason() {
+            const select = document.getElementById('seasonSelect');
+            currentSeason = parseInt(select.value);
+            loadSeasonEpisodes(currentSeason);
+        }
+
+        // Fungsi memuat episode berdasarkan objek data season yang dipilih
+        function loadSeasonEpisodes(seasonNum) {
+            const targetSeasonObj = globalSeasonsData.find(s => s.season_number == seasonNum);
+            const totalEpisodes = targetSeasonObj ? targetSeasonObj.episode_count : 12; // Cadangan default
+
+            generateEpisodeButtons(totalEpisodes);
+            playEpisode(1); // Putar episode 1 otomatis tiap ganti season
+        }
+
+        // Fungsi menggambar tombol angka episode di layar
+        function generateEpisodeButtons(total) {
+            const grid = document.getElementById('episodeGrid');
+            grid.innerHTML = '';
+
+            for (let i = 1; i <= total; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'ep-btn';
+                btn.id = `ep-${i}`;
+                btn.innerText = i;
+                btn.onclick = () => playEpisode(i);
+                grid.appendChild(btn);
+            }
+        }
+
+        // Fungsi mengarahkan video player iframe ke episode yang diklik
+        function playEpisode(epNumber) {
+            const player = document.getElementById('seriesPlayer');
+            // Menembak endpoint TV VidSrc dengan parameter ID, Season, dan Episode aktif
+            player.src = `https://vidsrcme.su{seriesId}&season=${currentSeason}&episode=${epNumber}`;
+
+            // Mengubah status visual warna tombol aktif menjadi merah menyala
+            document.querySelectorAll('.ep-btn').forEach(btn => btn.classList.remove('active'));
+            const clickedBtn = document.getElementById(`ep-${epNumber}`);
+            if (clickedBtn) clickedBtn.classList.add('active');
+        }
+    </script>
+</body>
+</html>
