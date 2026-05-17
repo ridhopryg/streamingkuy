@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streaming Player - StreamAuto</title>
+    <title>Streaming Player - Premium Engine</title>
     <style>
 * {
     margin: 0;
@@ -58,16 +58,36 @@ body {
 }
 
 .control-row {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 15px;
-    margin-bottom: 15px;
 }
 
 .control-group {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    align-items: center;
+}
+
+.home-btn {
+    padding: 8px 16px;
+    background-color: #ff6b6b;
+    color: #fff;
+    border: 1px solid #ff6b6b;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.home-btn:hover {
+    background-color: #ff5252;
+    border-color: #ff5252;
 }
 
 .server-btn {
@@ -89,8 +109,8 @@ body {
 }
 
 .server-btn.active {
-    background-color: #ff6b6b;
-    border-color: #ff6b6b;
+    background-color: #3f51b5;
+    border-color: #3f51b5;
 }
 
 .info-box {
@@ -105,20 +125,14 @@ body {
 
 .navigation-bar {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     margin-bottom: 20px;
     background: rgba(0, 0, 0, 0.6);
     padding: 15px 20px;
     border-radius: 8px;
     border-left: 4px solid #ff6b6b;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.nav-group {
-    display: flex;
-    gap: 10px;
+    display: none; /* Otomatis aktif jika tipe TV */
 }
 
 .stream-btn {
@@ -142,10 +156,6 @@ body {
 .stream-btn.primary {
     background-color: #ff6b6b;
     border-color: #ff6b6b;
-}
-
-.stream-btn.primary:hover {
-    background-color: #ff5252;
 }
 
 .stream-btn:disabled {
@@ -200,12 +210,10 @@ body {
     overflow: hidden;
     transition: all 0.3s ease;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
 .movie-card:hover {
     transform: translateY(-10px) scale(1.05);
-    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
 }
 
 .movie-card a {
@@ -218,22 +226,11 @@ body {
     width: 100%;
     height: 300px;
     object-fit: cover;
-    transition: filter 0.3s ease;
-}
-
-.movie-card:hover img {
-    filter: brightness(0.7);
 }
 
 .movie-info {
     padding: 15px;
     background: rgba(0, 0, 0, 0.8);
-}
-
-.movie-info h3 {
-    font-size: 1.1em;
-    margin-bottom: 8px;
-    line-height: 1.4;
 }
 
 .rating {
@@ -243,14 +240,6 @@ body {
     border-radius: 5px;
     font-size: 0.9em;
     font-weight: bold;
-}
-
-.loading {
-    text-align: center;
-    padding: 50px 20px;
-    font-size: 1.2em;
-    color: #666;
-    grid-column: 1 / -1;
 }
 
 .error-msg {
@@ -265,34 +254,12 @@ body {
 @media (max-width: 768px) {
     .control-group {
         flex-direction: column;
+        align-items: stretch;
     }
-
-    .server-btn {
+    .home-btn, .server-btn {
         width: 100%;
         text-align: center;
-    }
-
-    .navigation-bar {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .nav-group {
-        width: 100%;
-    }
-
-    .stream-btn {
-        flex: 1;
-        text-align: center;
-    }
-
-    .content-details h1 {
-        font-size: 1.5em;
-    }
-
-    .movie-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
+        justify-content: center;
     }
 }
     </style>
@@ -301,30 +268,28 @@ body {
 
     <div class="stream-container">
         <div class="control-panel">
-            <h3>⚙️ Pilih Server Player (Total: 13 Server)</h3>
+            <h3>⚙️ Kontrol & Pilihan Server Player</h3>
             <div class="control-row">
-                <div>
-                    <div style="margin-bottom: 8px; font-size: 12px; color: #bbb;">🎬 Klik Server untuk Mengganti Player:</div>
-                    <div class="control-group" id="serverButtons"></div>
+                <div class="control-group">
+                    <!-- Tombol Home diselipkan langsung di awal deretan server -->
+                    <a href="index.html" class="home-btn">🏠 HOME</a>
+                    <div id="serverButtons" class="control-group" style="display: inline-flex; gap: 8px; flex-wrap: wrap;"></div>
                 </div>
             </div>
             <div class="info-box">
-                💡 <b>Tips Subtitle Indonesia:</b> Klik tombol <b>Play</b> terlebih dahulu pada video, lalu cari dan klik ikon <b>"CC"</b> atau lambang <b>Roda Gigi (Settings)</b> di pojok kanan bawah internal player, kemudian pilih bahasa <b>Indonesian / Indonesia</b>.
+                💡 <b>Catatan Server Kustom:</b> Server P2P, TURBOVIP, CAST, dan HYDRAX membaca file video berdasarkan kode file manual yang dikirim melalui parameter <code>&vid=ID_VIDEO</code> pada URL.
             </div>
         </div>
 
         <div id="errorMsg"></div>
 
         <div class="player-wrapper">
-            <iframe id="vidsrcEngine" src="" allowfullscreen scrolling="no"></iframe>
+            <iframe id="vidsrcEngine" src="" allowfullscreen scrolling="no" allow="autoplay; encrypted-media"></iframe>
         </div>
 
-        <div class="navigation-bar">
-            <a href="index.html" class="stream-btn">🏠 Beranda</a>
-            <div class="nav-group" id="tvNavGroup" style="display: none;">
-                <button id="prevEpBtn" class="stream-btn" onclick="navigateEpisode(-1)">⏮️ Episode Seb</button>
-                <button id="nextEpBtn" class="stream-btn primary" onclick="navigateEpisode(1)">Episode Sel ⏭️</button>
-            </div>
+        <div class="navigation-bar" id="tvNavGroup">
+            <button id="prevEpBtn" class="stream-btn" onclick="navigateEpisode(-1)">⏮️ Episode Seb</button>
+            <button id="nextEpBtn" class="stream-btn primary" onclick="navigateEpisode(1)">Episode Sel ⏭️</button>
         </div>
 
         <div class="content-details">
@@ -335,7 +300,7 @@ body {
 
         <h3 class="section-title" id="recTitle">Rekomendasi Serupa 🎬</h3>
         <div id="recommendationGrid" class="movie-grid">
-            <div class="loading">Memuat rekomendasi serupa...</div>
+            <p style='color:#666; padding: 20px;'>Memuat rekomendasi serupa...</p>
         </div>
     </div>
 
@@ -344,93 +309,54 @@ body {
         const BASE_URL = 'https://api.themoviedb.org/3';
         const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-        // 13 Pilihan Server Embed (Dukungan Subtitle Indonesia Global & File ID Hosting)
+        // Hanya menyisakan 4 rumpun server kustom sesuai instruksi Anda
         const STREAMING_SERVERS = [
             {
-                name: 'Server 1 - VidSrc Pro',
-                movie: (id) => `https://vidsrc.pro/embed/movie/${id}`,
-                tv: (id, s, e) => `https://vidsrc.pro/embed/tv/${id}/${s}/${e}`,
+                name: '⚡ P2P STREAM',
+                movie: (vid) => `https://embed.p2pstream.xyz/e/${vid}`,
+                tv: (vid, s, e) => `https://embed.p2pstream.xyz/e/${vid}?s=${s}&e=${e}`
             },
             {
-                name: 'Server 2 - VidSrc To',
-                movie: (id) => `https://vidsrc.to/embed/movie/${id}`,
-                tv: (id, s, e) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}`,
+                name: '🚀 TURBOVIP',
+                movie: (vid) => `https://turbovip.site/embed/${vid}`,
+                tv: (vid, s, e) => `https://turbovip.site/embed/${vid}?season=${s}&episode=${e}`
             },
             {
-                name: 'Server 3 - VidSrc Me',
-                movie: (id) => `https://vidsrc.me/embed/movie?tmdb=${id}`,
-                tv: (id, s, e) => `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}`,
+                name: '📺 CAST PLAYER',
+                movie: (vid) => `https://castplayer.club/embed/${vid}`,
+                tv: (vid, s, e) => `https://castplayer.club/embed/${vid}?s=${s}&e=${e}`
             },
             {
-                name: 'Server 4 - SuperEmbed',
-                movie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`,
-                tv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`,
-            },
-            {
-                name: 'Server 5 - Embed.su',
-                movie: (id) => `https://embed.su/embed/movie/${id}`,
-                tv: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}`,
-            },
-            {
-                name: 'Server 6 - 2Embed VIP',
-                movie: (id) => `https://www.2embed.cc/embed/${id}`,
-                tv: (id, s, e) => `https://www.2embed.cc/embedtv/${id}/${s}/${e}`,
-            },
-            {
-                name: 'Server 7 - Noverse NL',
-                movie: (id) => `https://player.vidsrc.nl/embed/movie/${id}`,
-                tv: (id, s, e) => `https://player.vidsrc.nl/embed/tv/${id}/${s}/${e}`,
-            },
-            {
-                name: 'Server 8 - VidSrc CC',
-                movie: (id) => `https://vidsrc.cc/v2/embed/movie/${id}`,
-                tv: (id, s, e) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}`,
-            },
-            {
-                name: 'Server 9 - Moviesapi',
-                movie: (id) => `https://moviesapi.club/movie/${id}`,
-                tv: (id, s, e) => `https://moviesapi.club/tv/${id}-${s}-${e}`,
-            },
-            {
-                name: 'Server 10 - Autoembed',
-                movie: (id) => `https://autoembed.cc/embed/movie/${id}`,
-                tv: (id, s, e) => `https://autoembed.cc/embed/tv/${id}/${s}/${e}`,
-            },
-            {
-                name: 'Server 11 - DbGo Fun',
-                movie: (id) => `https://www.dbgo.fun/embed/movie/${id}`,
-                tv: (id, s, e) => `https://www.dbgo.fun/embed/tv/${id}/${s}/${e}`,
-            },
-            {
-                name: 'Server 12 - Vidsrc xyz',
-                movie: (id) => `https://vidsrc.xyz/embed/movie/${id}`,
-                tv: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}`,
-            },
-            {
-                name: 'Server 13 - Doodstream*',
-                // Menggunakan File ID Mandiri di parameter URL ?id=
-                movie: (id) => `https://dood.li/e/${id}`, 
-                tv: (id, s, e) => `https://dood.li/e/${id}?season=${s}&episode=${e}`,
+                name: '🐉 HYDRAX',
+                movie: (vid) => `https://playhydrax.com/?v=${vid}`,
+                tv: (vid, s, e) => `https://playhydrax.com/?v=${vid}&s=${s}&e=${e}`
             }
         ];
 
         const urlParams = new URLSearchParams(window.location.search);
-        const tmdbId = urlParams.get('id');
+        const tmdbId = urlParams.get('id'); // Untuk metadata TMDB
+        const fileVideoId = urlParams.get('vid') || 'demo'; // Mengambil File ID video kustom
         const type = urlParams.get('type') || 'movie'; 
         let currentSeason = parseInt(urlParams.get('s')) || 1;
         let currentEpisode = parseInt(urlParams.get('e')) || 1;
         let currentServerIndex = parseInt(urlParams.get('server')) || 0;
-        let maxEpisodesInSeason = 1;
+        let maxEpisodesInSeason = 24;
 
         const playerIframe = document.getElementById('vidsrcEngine');
 
-        if (tmdbId) {
+        if (tmdbId || fileVideoId) {
             initializeControls();
             updatePlayerSource();
-            fetchContentDetails();
-            fetchRecommendations();
+            if (tmdbId) {
+                fetchContentDetails();
+                fetchRecommendations();
+            } else {
+                document.getElementById('streamTitle').innerText = "File Konten Mandiri (ID: " + fileVideoId + ")";
+                document.getElementById('streamOverview').innerText = "Informasi TMDB tidak dimuat karena parameter ?id= tidak diisi.";
+            }
         } else {
-            window.location.href = 'index.html';
+            document.getElementById('streamTitle').innerText = "Akses Ditolak";
+            showErrorMsg("Parameter URL tidak lengkap. Butuh ?vid=ID_VIDEO atau ?id=TMDB_ID");
         }
 
         function initializeControls() {
@@ -459,15 +385,15 @@ body {
 
             try {
                 if (type === 'movie') {
-                    playerIframe.src = server.movie(tmdbId);
+                    playerIframe.src = server.movie(fileVideoId);
                     document.getElementById('tvNavGroup').style.display = 'none'; 
                 } else if (type === 'tv') {
-                    playerIframe.src = server.tv(tmdbId, currentSeason, currentEpisode);
+                    playerIframe.src = server.tv(fileVideoId, currentSeason, currentEpisode);
                     document.getElementById('tvNavGroup').style.display = 'flex'; 
                 }
                 showErrorMsg('');
             } catch (err) {
-                showErrorMsg('Error memuat player: ' + err.message);
+                showErrorMsg('Gagal memuat player: ' + err.message);
             }
         }
 
@@ -481,24 +407,11 @@ body {
         }
 
         function fetchContentDetails() {
-            // Melibatkan parameter &include_adult=true agar konten dewasa TMDB dapat terbaca sempurna
             fetch(`${BASE_URL}/${type}/${tmdbId}?api_key=${TMDB_API_KEY}&language=id-ID&include_adult=true`)
                 .then(res => res.json())
                 .then(data => {
                     const title = data.title || data.name;
-                    if (!title) {
-                        // Fallback jika tidak ditemukan data bahasa Indonesia
-                        return fetch(`${BASE_URL}/${type}/${tmdbId}?api_key=${TMDB_API_KEY}&include_adult=true`);
-                    }
-                    return data;
-                })
-                .then(res => (res.json ? res.json() : res))
-                .then(data => {
-                    const title = data.title || data.name;
-                    if(!title) {
-                        document.getElementById('streamTitle').innerText = "Konten Khusus / Berkas ID Luar";
-                        return;
-                    }
+                    if(!title) return;
                     
                     if (type === 'movie') {
                         document.getElementById('streamTitle').innerText = title;
@@ -511,18 +424,14 @@ body {
                             const seasonObj = data.seasons.find(s => s.season_number === currentSeason);
                             maxEpisodesInSeason = seasonObj ? seasonObj.episode_count : 24;
                         }
-                        
                         document.getElementById('prevEpBtn').disabled = (currentEpisode <= 1);
                         document.getElementById('nextEpBtn').disabled = (currentEpisode >= maxEpisodesInSeason);
                     }
                     
-                    document.getElementById('streamOverview').innerText = data.overview || "Sinopsis tidak tersedia untuk judul ini.";
-                    document.title = `Nonton ${title} - StreamAuto`;
+                    document.getElementById('streamOverview').innerText = data.overview || "Sinopsis tidak tersedia dalam Bahasa Indonesia.";
+                    document.title = `Nonton ${title} - Premium Engine`;
                 })
-                .catch(err => {
-                    console.error("Error:", err);
-                    document.getElementById('streamTitle').innerText = "Streaming Player";
-                });
+                .catch(err => console.error("Error fetching TMDB:", err));
         }
 
         function navigateEpisode(direction) {
@@ -530,7 +439,7 @@ body {
             if (currentEpisode < 1) currentEpisode = 1;
             if (currentEpisode > maxEpisodesInSeason) currentEpisode = maxEpisodesInSeason;
 
-            const newUrl = `?id=${tmdbId}&type=tv&s=${currentSeason}&e=${currentEpisode}&server=${currentServerIndex}`;
+            const newUrl = `?id=${tmdbId}&vid=${fileVideoId}&type=tv&s=${currentSeason}&e=${currentEpisode}&server=${currentServerIndex}`;
             window.history.pushState({ path: newUrl }, '', newUrl);
 
             updatePlayerSource();
@@ -538,9 +447,6 @@ body {
         }
 
         function fetchRecommendations() {
-            document.getElementById('recTitle').innerText = type === 'movie' ? "Rekomendasi Film Serupa 🎬" : "Rekomendasi Serial Serupa 📺";
-            
-            // Menyertakan include_adult=true pada rekomendasi agar menghasilkan film sejenis yang relevan
             fetch(`${BASE_URL}/${type}/${tmdbId}/recommendations?api_key=${TMDB_API_KEY}&language=id-ID&include_adult=true`)
                 .then(res => res.json())
                 .then(data => {
@@ -552,17 +458,17 @@ body {
                         return;
                     }
 
-                    const limitedList = data.results.slice(0, 6);
-                    limitedList.forEach(item => {
+                    data.results.slice(0, 6).forEach(item => {
                         const title = item.title || item.name;
                         const poster = item.poster_path ? `${IMAGE_BASE_URL}${item.poster_path}` : 'https://via.placeholder.com/300x450?text=No+Image';
-                        const targetUrl = `?id=${item.id}&type=${type}&server=${currentServerIndex}`;
+                        // Mengoper parameter TMDB id lama beserta placeholder vid baru
+                        const targetUrl = `?id=${item.id}&vid=${fileVideoId}&type=${type}&server=${currentServerIndex}`;
 
                         const card = document.createElement('div');
                         card.className = 'movie-card';
                         card.innerHTML = `
                             <a href="${targetUrl}">
-                                <img src="${poster}" alt="${title}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x450?text=No+Image'">
+                                <img src="${poster}" alt="${title}" loading="lazy">
                                 <div class="movie-info">
                                     <h3>${title}</h3>
                                     <span class="rating">⭐ ${item.vote_average ? item.vote_average.toFixed(1) : '0.0'}</span>
@@ -572,7 +478,7 @@ body {
                         grid.appendChild(card);
                     });
                 })
-                .catch(err => console.error("Error:", err));
+                .catch(err => console.error("Error recommendations:", err));
         }
     </script>
 </body>
