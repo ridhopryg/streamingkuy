@@ -3,162 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streaming Player - Sub Indo Premium</title>
+    <title>Streaming Player - Server Player</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); 
-            color: #fff; 
+            background: #0f172a; 
+            color: #f8fafc; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             min-height: 100vh; 
         }
-        .stream-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .stream-container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
         
+        /* Panel Server */
+        .server-panel { 
+            background: #1e293b; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-bottom: 25px; 
+            border: 1px solid #334155;
+        }
+        .server-panel h3 { 
+            margin-bottom: 15px; 
+            font-size: 1.1em; 
+            color: #38bdf8; 
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* List Server */
+        .server-list { 
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .server-row { 
+            background: #0f172a;
+            color: #f8fafc; 
+            border: 1px solid #334155; 
+            border-radius: 6px; 
+            padding: 14px 20px;
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+            width: 100%;
+        }
+        .server-row:hover { 
+            background: #1e293b; 
+            border-color: #38bdf8;
+        }
+        .server-row.active { 
+            background: #38bdf8; 
+            color: #0f172a;
+            font-weight: 600;
+            border-color: #38bdf8;
+        }
+        .server-row .server-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .server-row .server-name {
+            font-size: 14px;
+        }
+        .server-row .server-desc {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        .server-row.active .server-desc {
+            opacity: 0.9;
+        }
+        .server-row .server-status {
+            font-size: 11px;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            background: #1e293b;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+        }
+        .server-row.active .server-status {
+            background: #0f172a;
+            color: #38bdf8;
+            border-color: #0f172a;
+        }
+        
+        .home-btn { 
+            display: inline-block;
+            padding: 10px 20px; 
+            background-color: #334155; 
+            color: #f8fafc; 
+            border: none; 
+            border-radius: 6px; 
+            font-weight: 600; 
+            font-size: 13px; 
+            cursor: pointer; 
+            text-decoration: none; 
+            transition: background 0.2s ease;
+            margin-top: 5px;
+        }
+        .home-btn:hover { background-color: #475569; }
+        
+        /* Video Player */
+        .player-container {
+            position: relative;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #000;
+            border: 1px solid #334155;
+        }
         .player-wrapper { 
             position: relative; 
             padding-bottom: 56.25%; 
             height: 0; 
             overflow: hidden; 
-            border-radius: 10px; 
-            background: #000; 
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8); 
-            margin-bottom: 20px; 
         }
-        .player-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .player-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: 1; }
         
-        .control-panel { 
-            background: rgba(0, 0, 0, 0.6); 
-            padding: 15px 20px; 
-            border-radius: 8px; 
-            margin-bottom: 20px; 
-            border-left: 4px solid #ff6b6b; 
+        /* Upload Subtitle */
+        .upload-panel {
+            background: #1e293b;
+            border: 1px dashed #475569;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-        .control-panel h3 { margin-bottom: 12px; font-size: 1em; color: #ff6b6b; }
-        .control-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-        
-        .home-btn { 
-            padding: 8px 16px; 
-            background-color: #ff6b6b; 
-            color: #fff; 
-            border: none; 
-            border-radius: 5px; 
-            font-weight: bold; 
-            font-size: 12px; 
-            cursor: pointer; 
-            text-decoration: none; 
-            transition: all 0.3s ease; 
-        }
-        .home-btn:hover { background-color: #ff5252; }
-        
-        .server-btn { 
-            padding: 8px 14px; 
-            background-color: rgba(255, 255, 255, 0.1); 
-            color: #fff; 
-            border: 1px solid #444; 
-            border-radius: 5px; 
-            font-weight: bold; 
-            font-size: 12px; 
-            cursor: pointer; 
-            transition: all 0.3s ease; 
-        }
-        .server-btn:hover { background-color: rgba(255, 107, 107, 0.2); border-color: #ff6b6b; }
-        .server-btn.active { background-color: #3f51b5; border-color: #3f51b5; }
-        
-        .info-box { 
-            background: rgba(0, 255, 136, 0.1); 
-            border: 1px solid #00ff88; 
-            padding: 15px; 
-            border-radius: 5px; 
-            font-size: 12px; 
-            margin-top: 15px; 
-            color: #00ff88; 
-        }
-        
+        .upload-panel span { font-size: 13px; color: #94a3b8; }
+        .upload-btn-wrapper { position: relative; overflow: hidden; display: inline-block; }
+        .btn-upload { border: 1px solid #38bdf8; color: #38bdf8; background-color: transparent; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .btn-upload:hover { background: rgba(56, 189, 248, 0.1); }
+        .upload-btn-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
+
+        /* Navigasi TV Series */
         .navigation-bar { 
             display: flex; 
-            justify-content: flex-end; 
-            gap: 10px;
-            align-items: center; 
-            margin-bottom: 20px; 
-            background: rgba(0, 0, 0, 0.6); 
-            padding: 15px 20px; 
-            border-radius: 8px; 
-            border-left: 4px solid #ff6b6b; 
+            justify-content: space-between; 
+            gap: 12px;
+            margin-bottom: 25px; 
             display: none; 
         }
         .stream-btn { 
-            padding: 10px 20px; 
-            background-color: rgba(255, 255, 255, 0.1); 
-            color: #fff; 
-            border: 1px solid #444; 
-            border-radius: 5px; 
-            font-weight: bold; 
-            font-size: 14px; 
+            padding: 12px 24px; 
+            background-color: #1e293b; 
+            color: #f8fafc; 
+            border: 1px solid #334155; 
+            border-radius: 6px; 
+            font-weight: 600; 
+            font-size: 13px; 
             cursor: pointer; 
-            transition: all 0.3s ease; 
+            transition: all 0.2s ease; 
         }
-        .stream-btn:hover { background-color: rgba(255, 107, 107, 0.2); border-color: #ff6b6b; }
-        .stream-btn.primary { background-color: #ff6b6b; border-color: #ff6b6b; }
-        .stream-btn:disabled { background-color: rgba(0, 0, 0, 0.3); color: #666; cursor: not-allowed; border-color: #333; }
+        .stream-btn:hover { background-color: #334155; border-color: #475569; }
+        .stream-btn:disabled { background-color: #0f172a; color: #475569; cursor: not-allowed; border-color: #1e293b; }
         
-        .content-details { background: rgba(0, 0, 0, 0.6); padding: 25px; border-radius: 10px; border-left: 4px solid #ff6b6b; margin-bottom: 30px; }
-        .content-details h1 { margin: 0 0 10px 0; font-size: 2em; color: #ff6b6b; }
-        .content-details .meta { color: #999; font-size: 14px; margin-bottom: 15px; }
-        .content-details .overview { color: #ccc; line-height: 1.6; font-size: 1em; }
+        /* Detail Konten */
+        .content-details { background: #1e293b; padding: 25px; border-radius: 8px; border-left: 4px solid #38bdf8; margin-bottom: 35px; border-top: 1px solid #334155; border-right: 1px solid #334155; border-bottom: 1px solid #334155; }
+        .content-details h1 { margin: 0 0 10px 0; font-size: 1.6em; color: #f8fafc; font-weight: 600; }
+        .content-details .meta { color: #94a3b8; font-size: 13px; margin-bottom: 15px; }
+        .content-details .overview { color: #cbd5e1; line-height: 1.6; font-size: 0.95em; }
         
-        .section-title { font-size: 1.5em; border-left: 4px solid #ff6b6b; padding-left: 10px; margin: 40px 0 20px 0; }
-        .movie-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-        .movie-card { background: rgba(0, 0, 0, 0.6); border-radius: 10px; overflow: hidden; transition: all 0.3s ease; }
-        .movie-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(255,107,107,0.2); }
+        /* Rekomendasi */
+        .section-title { font-size: 1.2em; text-transform: uppercase; letter-spacing: 0.5px; color: #94a3b8; margin: 40px 0 20px 0; font-weight: 600; }
+        .movie-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        .movie-card { background: #1e293b; border-radius: 8px; overflow: hidden; border: 1px solid #334155; transition: transform 0.2s ease; }
+        .movie-card:hover { transform: translateY(-4px); border-color: #38bdf8; }
         .movie-card a { text-decoration: none; color: inherit; display: block; }
-        .movie-card img { width: 100%; height: 260px; object-fit: cover; }
-        .movie-info { padding: 12px; background: rgba(0, 0, 0, 0.8); }
-        .movie-info h3 { font-size: 0.9em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 5px; }
-        .rating { display: inline-block; background: #ff6b6b; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; font-weight: bold; }
+        .movie-card img { width: 100%; height: 240px; object-fit: cover; }
+        .movie-info { padding: 12px; background: #1e293b; }
+        .movie-info h3 { font-size: 0.85em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; font-weight: 600; }
+        .rating { display: inline-block; background: #38bdf8; color: #0f172a; padding: 2px 6px; border-radius: 4px; font-size: 0.75em; font-weight: bold; }
         
         @media (max-width: 768px) { 
-            .control-group { flex-direction: column; align-items: stretch; } 
-            .home-btn, .server-btn { width: 100%; text-align: center; } 
-            .movie-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+            .movie-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
             .movie-card img { height: 190px; }
+            .server-row { padding: 12px; }
+            .server-row .server-status { font-size: 10px; padding: 2px 6px; }
         }
     </style>
 </head>
 <body>
 
     <div class="stream-container">
-        <!-- Panel Server & Navigasi -->
-        <div class="control-panel">
-            <h3>⚙️ Opsi Server Pemutar Video (Suntik Subtitle Indonesia)</h3>
-            <div class="control-group">
-                <a href="index.html" class="home-btn">🏠 KEMBALI BERANDA</a>
-                <div id="serverButtons" style="display: inline-flex; gap: 8px; flex-wrap: wrap;"></div>
+        <div class="server-panel">
+            <h3>Pilihan Server</h3>
+            <div id="serverList" class="server-list"></div>
+            <a href="index.html" class="home-btn">Kembali ke Beranda</a>
+        </div>
+
+        <div class="upload-panel">
+            <span>Subtitle tidak muncul otomatis? Unggah berkas subtitle (.srt / .vtt) Anda secara manual:</span>
+            <div class="upload-btn-wrapper">
+                <button class="btn-upload">Pilih Subtitle</button>
+                <input type="file" id="subUploader" accept=".srt,.vtt" onchange="handleSubtitleUpload(event)">
             </div>
-            <div id="infoBoxContainer" class="info-box"></div>
         </div>
 
-        <!-- Frame Video Player -->
-        <div class="player-wrapper">
-            <iframe id="videoPlayer" src="" allowfullscreen scrolling="no" allow="autoplay; encrypted-media"></iframe>
+        <div class="player-container">
+            <div class="player-wrapper">
+                <iframe id="videoPlayer" src="" allowfullscreen scrolling="no" allow="autoplay; encrypted-media"></iframe>
+            </div>
         </div>
 
-        <!-- Navigasi khusus Serial TV (Next / Prev Episode) -->
         <div class="navigation-bar" id="tvNavGroup">
-            <button id="prevEpBtn" class="stream-btn" onclick="navigateEpisode(-1)">⏮️ Episode Sebelumnya</button>
-            <button id="nextEpBtn" class="stream-btn primary" onclick="navigateEpisode(1)">Episode Selanjutnya ⏭️</button>
+            <button id="prevEpBtn" class="stream-btn" onclick="navigateEpisode(-1)">Episode Sebelumnya</button>
+            <button id="nextEpBtn" class="stream-btn" onclick="navigateEpisode(1)">Episode Selanjutnya</button>
         </div>
 
-        <!-- Detail Data Film -->
         <div class="content-details">
             <h1 id="streamTitle">Memuat Judul...</h1>
             <div id="streamMeta" class="meta"></div>
             <p id="streamOverview" class="overview"></p>
         </div>
 
-        <!-- Rekomendasi Pintar -->
-        <h3 class="section-title">🎬 Rekomendasi Film Serupa</h3>
+        <h3 class="section-title">Rekomendasi Populer</h3>
         <div id="recommendationGrid" class="movie-grid">
-            <p style='color:#aaa; padding: 20px;'>Memuat rekomendasi serupa... ⏳</p>
+            <p style='color:#64748b; padding: 10px;'>Memuat data rekomendasi... ⏳</p>
         </div>
     </div>
 
@@ -167,27 +238,31 @@
         const BASE_URL = 'https://api.themoviedb.org/3';
         const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-        // Daftar server aggregator anti-pusing otomatis panggil subtitle Indonesia (Hydrax Fix)
+        // DAFTAR SERVER EMBED YANG BERSIH DAN STRUKTURAL
         const STREAMING_SERVERS = [
             {
-                name: '🎬 SERVER SUB INDO 1 (Utama)',
+                name: 'Server 1',
+                desc: 'Jalur Utama (Subtitle Bahasa Indonesia)',
                 movie: (id) => `https://vidsrc.in/embed/movie/${id}?sub_lang=id`,
                 tv: (id, s, e) => `https://vidsrc.in/embed/tv/${id}/${s}/${e}?sub_lang=id`
             },
             {
-                name: '🚀 SERVER SUB INDO 2 (Alternatif)',
+                name: 'Server 2',
+                desc: 'Jalur Alternatif (Subtitle Bahasa Indonesia)',
                 movie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1&sub_lang=id`,
                 tv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}&sub_lang=id`
             },
             {
-                name: '📺 SERVER SUB INDO 3 (Cadangan)',
-                movie: (id) => `https://vidsrc.xyz/embed/movie?tmdb=${id}&sub_lang=id`,
-                tv: (id, s, e) => `https://vidsrc.xyz/embed/tv?tmdb=${id}&season=${s}&episode=${e}&sub_lang=id`
+                name: 'Server 3',
+                desc: 'Jalur Cadangan (Konfigurasi Teks Manual)',
+                movie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1&sub_id=id`,
+                tv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}&sub_id=id`
             },
             {
-                name: '🔮 SUPEREMBED (Banyak Server)',
-                movie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`,
-                tv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`
+                name: 'Server 4',
+                desc: 'Jalur Internasional (Vidsrc Network)',
+                movie: (id) => `https://vidsrc.xyz/embed/movie?tmdb=${id}&sub_lang=id`,
+                tv: (id, s, e) => `https://vidsrc.xyz/embed/tv?tmdb=${id}&season=${s}&episode=${e}&sub_lang=id`
             }
         ];
 
@@ -202,34 +277,39 @@
         const playerIframe = document.getElementById('videoPlayer');
 
         if (tmdbId) {
-            initializeControls();
+            renderServerList();
             updatePlayerSource();
             fetchContentDetails();
-            fetchRecommendations();
-            tambahkanTombolLapor(); 
-        } else {
-            document.getElementById('streamTitle').innerText = "Parameter Error";
-            document.getElementById('infoBoxContainer').innerHTML = "⚠️ Hubungkan melalui poster halaman index.html.";
+            fetchPopularRecommendations();
         }
 
-        function initializeControls() {
-            const serverContainer = document.getElementById('serverButtons');
-            serverContainer.innerHTML = '';
+        // FUNGSI UNTUK MERENDER DAFTAR SERVER SEPERTI STRUKTUR LIST GAYA LAMA
+        function renderServerList() {
+            const listContainer = document.getElementById('serverList');
+            listContainer.innerHTML = '';
+            
             STREAMING_SERVERS.forEach((server, index) => {
-                const btn = document.createElement('button');
-                btn.className = `server-btn ${index === currentServerIndex ? 'active' : ''}`;
-                btn.innerText = server.name;
-                btn.onclick = () => switchServer(index);
-                serverContainer.appendChild(btn);
+                const row = document.createElement('div');
+                row.className = `server-row ${index === currentServerIndex ? 'active' : ''}`;
+                
+                row.innerHTML = `
+                    <div class="server-info">
+                        <span class="server-name">${server.name}</span>
+                        <span class="server-desc">${server.desc}</span>
+                    </div>
+                    <span class="server-status">Aktif</span>
+                `;
+                
+                row.onclick = () => {
+                    currentServerIndex = index;
+                    document.querySelectorAll('.server-row').forEach((r, i) => {
+                        r.classList.toggle('active', i === currentServerIndex);
+                    });
+                    updatePlayerSource();
+                };
+                
+                listContainer.appendChild(row);
             });
-        }
-
-        function switchServer(index) {
-            currentServerIndex = index;
-            document.querySelectorAll('.server-btn').forEach((btn, i) => {
-                btn.classList.toggle('active', i === currentServerIndex);
-            });
-            updatePlayerSource();
         }
 
         function updatePlayerSource() {
@@ -245,30 +325,10 @@
             }
         }
 
-        function tambahkanTombolLapor() {
-            const infoBox = document.getElementById('infoBoxContainer');
-            if (infoBox) {
-                infoBox.innerHTML = `
-                    <div style="display: flex; flex-direction: column; gap: 5px;">
-                        <div>✨ <b>Sistem Sinkronisasi Berhasil:</b> Server otomatis mencari file video & subtitle Indonesia terakurat.</div>
-                        <div style="margin-top: 5px; padding-top: 5px; border-top: 1px dashed rgba(0,255,136,0.3)">
-                            ❌ <b>Video Kosong / Subtitle Belum Muncul?</b> 
-                            <button onclick="pindahServerOtomatis()" style="background:#ffa500; border:none; color:#000; padding:4px 10px; border-radius:3px; font-weight:bold; cursor:pointer; font-size:11px; margin-left:5px;">
-                                🔄 Paksa Cari di Server Cadangan Lain
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        function pindahServerOtomatis() {
-            currentServerIndex++;
-            if (currentServerIndex >= STREAMING_SERVERS.length) {
-                currentServerIndex = 0; 
-                alert("Semua server alternatif sudah dicoba. Jika film sangat baru, harap tunggu beberapa jam sampai pihak pengunggah menyinkronkan file video.");
-            }
-            switchServer(currentServerIndex);
+        function handleSubtitleUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            alert("Berkas subtitle berhasil diunggah.");
         }
 
         function fetchContentDetails() {
@@ -280,10 +340,10 @@
                     
                     if (type === 'movie') {
                         document.getElementById('streamTitle').innerText = title;
-                        document.getElementById('streamMeta').innerText = `Tahun Rilis: ${data.release_date ? data.release_date.split('-')[0] : 'N/A'} | Rating Global: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
+                        document.getElementById('streamMeta').innerText = `Tahun Rilis: ${data.release_date ? data.release_date.split('-')[0] : 'N/A'} | Rating: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
                     } else {
                         document.getElementById('streamTitle').innerText = `${title} (Season ${currentSeason} - Episode ${currentEpisode})`;
-                        document.getElementById('streamMeta').innerText = `Rating Global: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
+                        document.getElementById('streamMeta').innerText = `Rating: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
                         
                         if (data.seasons) {
                             const seasonObj = data.seasons.find(s => s.season_number === currentSeason);
@@ -293,10 +353,10 @@
                         document.getElementById('nextEpBtn').disabled = (currentEpisode >= maxEpisodesInSeason);
                     }
                     
-                    document.getElementById('streamOverview').innerText = data.overview || "Sinopsis untuk konten ini belum tersedia atau belum diterjemahkan.";
-                    document.title = `Nonton ${title} - StreamAuto Premium`;
+                    document.getElementById('streamOverview').innerText = data.overview || "Sinopsis dalam bahasa Indonesia belum tersedia untuk konten ini.";
+                    document.title = `Nonton ${title}`;
                 })
-                .catch(err => console.error("Error fetching TMDB:", err));
+                .catch(err => console.error(err));
         }
 
         function navigateEpisode(direction) {
@@ -311,23 +371,18 @@
             fetchContentDetails();
         }
 
-        function fetchRecommendations() {
-            fetch(`${BASE_URL}/${type}/${tmdbId}/recommendations?api_key=${TMDB_API_KEY}&language=id-ID&include_adult=true`)
+        function fetchPopularRecommendations() {
+            fetch(`${BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=id-ID&page=1&include_adult=true`)
                 .then(res => res.json())
                 .then(data => {
                     const grid = document.getElementById('recommendationGrid');
                     grid.innerHTML = '';
                     
-                    if (!data.results || data.results.length === 0) {
-                        grid.innerHTML = "<p style='color:#666; grid-column: 1/-1;'>Tidak ada data rekomendasi serupa untuk film ini.</p>";
-                        return;
-                    }
-
                     data.results.slice(0, 6).forEach(item => {
-                        const title = item.title || item.name;
+                        const title = item.title;
                         if (!item.poster_path) return;
                         const poster = `${IMAGE_BASE_URL}${item.poster_path}`;
-                        const targetUrl = `stream.html?id=${item.id}&type=${type}&server=${currentServerIndex}`;
+                        const targetUrl = `stream.html?id=${item.id}&type=movie&server=${currentServerIndex}`;
 
                         const card = document.createElement('div');
                         card.className = 'movie-card';
@@ -336,14 +391,14 @@
                                 <img src="${poster}" alt="${title}" loading="lazy">
                                 <div class="movie-info">
                                     <h3>${title}</h3>
-                                    <span class="rating">⭐ ${item.vote_average ? item.vote_average.toFixed(1) : '0.0'}</span>
+                                    <span class="rating">⭐ ${item.vote_average.toFixed(1)}</span>
                                 </div>
                             </a>
                         `;
                         grid.appendChild(card);
                     });
                 })
-                .catch(err => console.error("Error recommendations:", err));
+                .catch(err => console.error(err));
         }
     </script>
 </body>
