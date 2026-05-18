@@ -167,7 +167,7 @@
         const BASE_URL = 'https://api.themoviedb.org/3';
         const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-        // Daftar server aggregator anti-pusing otomatis panggil subtitle Indonesia
+        // Daftar server aggregator anti-pusing otomatis panggil subtitle Indonesia (Hydrax Fix)
         const STREAMING_SERVERS = [
             {
                 name: '🎬 SERVER SUB INDO 1 (Utama)',
@@ -185,9 +185,9 @@
                 tv: (id, s, e) => `https://vidsrc.xyz/embed/tv?tmdb=${id}&season=${s}&episode=${e}&sub_lang=id`
             },
             {
-                name: '🐉 VIP EXTRA (Multi Sub)',
-                movie: (id) => `https://playhydrax.com/embed/movie/${id}`,
-                tv: (id, s, e) => `https://playhydrax.com/embed/tv/${id}/${s}/${e}`
+                name: '🔮 SUPEREMBED (Banyak Server)',
+                movie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`,
+                tv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`
             }
         ];
 
