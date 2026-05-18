@@ -3,355 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streaming Player - StreamAuto Premium</title>
+    <title>Streaming Player - Sub Indo Premium</title>
     <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    color: #fff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    min-height: 100vh;
-}
-
-.stream-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.player-wrapper {
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
-    overflow: hidden;
-    border-radius: 10px;
-    background: #000;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-    margin-bottom: 20px;
-}
-
-.player-wrapper iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
-.control-panel {
-    background: rgba(0, 0, 0, 0.6);
-    padding: 15px 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    border-left: 4px solid #ff6b6b;
-}
-
-.control-panel h3 {
-    margin-bottom: 12px;
-    font-size: 1em;
-}
-
-.control-row {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.control-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: center;
-}
-
-.home-btn {
-    padding: 8px 16px;
-    background-color: #ff6b6b;
-    color: #fff;
-    border: 1px solid #ff6b6b;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 12px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-}
-
-.home-btn:hover {
-    background-color: #ff5252;
-}
-
-.server-btn {
-    padding: 8px 14px;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: 1px solid #444;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
-
-.server-btn:hover {
-    background-color: rgba(255, 107, 107, 0.2);
-    border-color: #ff6b6b;
-}
-
-.server-btn.active {
-    background-color: #ff6b6b;
-    border-color: #ff6b6b;
-}
-
-.info-box {
-    background: rgba(0, 255, 136, 0.1);
-    border: 1px solid #00ff88;
-    padding: 15px;
-    border-radius: 5px;
-    font-size: 12px;
-    margin-top: 10px;
-    color: #00ff88;
-}
-
-.info-box button {
-    background: #ffa500;
-    border: none;
-    color: #000;
-    padding: 6px 12px;
-    border-radius: 3px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 11px;
-    margin-left: 5px;
-    transition: all 0.3s ease;
-}
-
-.info-box button:hover {
-    background: #ff8c00;
-}
-
-.navigation-bar {
-    display: none;
-    justify-content: flex-end;
-    align-items: center;
-    margin-bottom: 20px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 15px 20px;
-    border-radius: 8px;
-    border-left: 4px solid #ff6b6b;
-    gap: 10px;
-}
-
-.navigation-bar.active {
-    display: flex;
-}
-
-.stream-btn {
-    padding: 10px 20px;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: 1px solid #444;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 14px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.stream-btn:hover {
-    background-color: rgba(255, 107, 107, 0.2);
-    border-color: #ff6b6b;
-}
-
-.stream-btn.primary {
-    background-color: #ff6b6b;
-    border-color: #ff6b6b;
-}
-
-.stream-btn.primary:hover {
-    background-color: #ff5252;
-}
-
-.stream-btn:disabled {
-    background-color: rgba(0, 0, 0, 0.3);
-    color: #666;
-    cursor: not-allowed;
-    border-color: #333;
-}
-
-.content-details {
-    background: rgba(0, 0, 0, 0.6);
-    padding: 25px;
-    border-radius: 10px;
-    border-left: 4px solid #ff6b6b;
-    margin-bottom: 30px;
-}
-
-.content-details h1 {
-    margin: 0 0 10px 0;
-    font-size: 2em;
-    color: #ff6b6b;
-}
-
-.content-details .meta {
-    color: #999;
-    font-size: 14px;
-    margin-bottom: 15px;
-}
-
-.content-details .overview {
-    color: #ccc;
-    line-height: 1.6;
-    font-size: 1em;
-}
-
-.section-title {
-    font-size: 1.5em;
-    border-left: 4px solid #ff6b6b;
-    padding-left: 10px;
-    margin: 40px 0 20px 0;
-}
-
-.movie-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-}
-
-.movie-card {
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: 10px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-}
-
-.movie-card:hover {
-    transform: translateY(-10px) scale(1.05);
-    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
-}
-
-.movie-card a {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-}
-
-.movie-card img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    transition: filter 0.3s ease;
-}
-
-.movie-card:hover img {
-    filter: brightness(0.7);
-}
-
-.movie-info {
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.8);
-}
-
-.movie-info h3 {
-    font-size: 1.1em;
-    margin-bottom: 8px;
-    line-height: 1.4;
-}
-
-.rating {
-    display: inline-block;
-    background: #ff6b6b;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 0.9em;
-    font-weight: bold;
-}
-
-@media (max-width: 768px) {
-    .control-group {
-        flex-direction: column;
-    }
-
-    .home-btn, .server-btn {
-        width: 100%;
-        text-align: center;
-        justify-content: center;
-    }
-
-    .content-details h1 {
-        font-size: 1.5em;
-    }
-
-    .movie-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
-    }
-}
-
-@media (max-width: 480px) {
-    .stream-container {
-        padding: 10px;
-    }
-
-    .content-details {
-        padding: 15px;
-    }
-
-    .content-details h1 {
-        font-size: 1.2em;
-    }
-
-    .server-btn {
-        padding: 6px 10px;
-        font-size: 11px;
-    }
-}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); 
+            color: #fff; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            min-height: 100vh; 
+        }
+        .stream-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        .player-wrapper { 
+            position: relative; 
+            padding-bottom: 56.25%; 
+            height: 0; 
+            overflow: hidden; 
+            border-radius: 10px; 
+            background: #000; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8); 
+            margin-bottom: 20px; 
+        }
+        .player-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
+        .control-panel { 
+            background: rgba(0, 0, 0, 0.6); 
+            padding: 15px 20px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            border-left: 4px solid #ff6b6b; 
+        }
+        .control-panel h3 { margin-bottom: 12px; font-size: 1em; color: #ff6b6b; }
+        .control-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        
+        .home-btn { 
+            padding: 8px 16px; 
+            background-color: #ff6b6b; 
+            color: #fff; 
+            border: none; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            font-size: 12px; 
+            cursor: pointer; 
+            text-decoration: none; 
+            transition: all 0.3s ease; 
+        }
+        .home-btn:hover { background-color: #ff5252; }
+        
+        .server-btn { 
+            padding: 8px 14px; 
+            background-color: rgba(255, 255, 255, 0.1); 
+            color: #fff; 
+            border: 1px solid #444; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            font-size: 12px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+        }
+        .server-btn:hover { background-color: rgba(255, 107, 107, 0.2); border-color: #ff6b6b; }
+        .server-btn.active { background-color: #3f51b5; border-color: #3f51b5; }
+        
+        .info-box { 
+            background: rgba(0, 255, 136, 0.1); 
+            border: 1px solid #00ff88; 
+            padding: 15px; 
+            border-radius: 5px; 
+            font-size: 12px; 
+            margin-top: 15px; 
+            color: #00ff88; 
+        }
+        
+        .navigation-bar { 
+            display: flex; 
+            justify-content: flex-end; 
+            gap: 10px;
+            align-items: center; 
+            margin-bottom: 20px; 
+            background: rgba(0, 0, 0, 0.6); 
+            padding: 15px 20px; 
+            border-radius: 8px; 
+            border-left: 4px solid #ff6b6b; 
+            display: none; 
+        }
+        .stream-btn { 
+            padding: 10px 20px; 
+            background-color: rgba(255, 255, 255, 0.1); 
+            color: #fff; 
+            border: 1px solid #444; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            font-size: 14px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+        }
+        .stream-btn:hover { background-color: rgba(255, 107, 107, 0.2); border-color: #ff6b6b; }
+        .stream-btn.primary { background-color: #ff6b6b; border-color: #ff6b6b; }
+        .stream-btn:disabled { background-color: rgba(0, 0, 0, 0.3); color: #666; cursor: not-allowed; border-color: #333; }
+        
+        .content-details { background: rgba(0, 0, 0, 0.6); padding: 25px; border-radius: 10px; border-left: 4px solid #ff6b6b; margin-bottom: 30px; }
+        .content-details h1 { margin: 0 0 10px 0; font-size: 2em; color: #ff6b6b; }
+        .content-details .meta { color: #999; font-size: 14px; margin-bottom: 15px; }
+        .content-details .overview { color: #ccc; line-height: 1.6; font-size: 1em; }
+        
+        .section-title { font-size: 1.5em; border-left: 4px solid #ff6b6b; padding-left: 10px; margin: 40px 0 20px 0; }
+        .movie-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .movie-card { background: rgba(0, 0, 0, 0.6); border-radius: 10px; overflow: hidden; transition: all 0.3s ease; }
+        .movie-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(255,107,107,0.2); }
+        .movie-card a { text-decoration: none; color: inherit; display: block; }
+        .movie-card img { width: 100%; height: 260px; object-fit: cover; }
+        .movie-info { padding: 12px; background: rgba(0, 0, 0, 0.8); }
+        .movie-info h3 { font-size: 0.9em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 5px; }
+        .rating { display: inline-block; background: #ff6b6b; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; font-weight: bold; }
+        
+        @media (max-width: 768px) { 
+            .control-group { flex-direction: column; align-items: stretch; } 
+            .home-btn, .server-btn { width: 100%; text-align: center; } 
+            .movie-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+            .movie-card img { height: 190px; }
+        }
     </style>
 </head>
 <body>
 
     <div class="stream-container">
+        <!-- Panel Server & Navigasi -->
         <div class="control-panel">
-            <h3>⚙️ Server Streaming dengan Sub Indo Gratis</h3>
-            <div class="control-row">
-                <div class="control-group">
-                    <a href="index.html" class="home-btn">🏠 HOME</a>
-                    <div id="serverButtons" class="control-group" style="display: inline-flex; gap: 8px; flex-wrap: wrap;"></div>
-                </div>
+            <h3>⚙️ Opsi Server Pemutar Video (Suntik Subtitle Indonesia)</h3>
+            <div class="control-group">
+                <a href="index.html" class="home-btn">🏠 KEMBALI BERANDA</a>
+                <div id="serverButtons" style="display: inline-flex; gap: 8px; flex-wrap: wrap;"></div>
             </div>
             <div id="infoBoxContainer" class="info-box"></div>
         </div>
 
+        <!-- Frame Video Player -->
         <div class="player-wrapper">
             <iframe id="videoPlayer" src="" allowfullscreen scrolling="no" allow="autoplay; encrypted-media"></iframe>
         </div>
 
+        <!-- Navigasi khusus Serial TV (Next / Prev Episode) -->
         <div class="navigation-bar" id="tvNavGroup">
-            <button id="prevEpBtn" class="stream-btn" onclick="navigateEpisode(-1)">⏮️ Episode Seb</button>
-            <button id="nextEpBtn" class="stream-btn primary" onclick="navigateEpisode(1)">Episode Sel ⏭️</button>
+            <button id="prevEpBtn" class="stream-btn" onclick="navigateEpisode(-1)">⏮️ Episode Sebelumnya</button>
+            <button id="nextEpBtn" class="stream-btn primary" onclick="navigateEpisode(1)">Episode Selanjutnya ⏭️</button>
         </div>
 
+        <!-- Detail Data Film -->
         <div class="content-details">
             <h1 id="streamTitle">Memuat Judul...</h1>
             <div id="streamMeta" class="meta"></div>
             <p id="streamOverview" class="overview"></p>
         </div>
 
-        <h3 class="section-title" id="recTitle">Rekomendasi Serupa 🎬</h3>
+        <!-- Rekomendasi Pintar -->
+        <h3 class="section-title">🎬 Rekomendasi Film Serupa</h3>
         <div id="recommendationGrid" class="movie-grid">
-            <p style='color:#666; padding: 20px;'>Memuat rekomendasi serupa...</p>
+            <p style='color:#aaa; padding: 20px;'>Memuat rekomendasi serupa... ⏳</p>
         </div>
     </div>
 
@@ -360,302 +167,27 @@ body {
         const BASE_URL = 'https://api.themoviedb.org/3';
         const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-        // Server Streaming dengan Sub Indo - TANPA VidSrc (ganti dengan Nonton.id sebagai utama)
+        // Daftar server aggregator anti-pusing otomatis panggil subtitle Indonesia
         const STREAMING_SERVERS = [
             {
-                name: '🌟 Nonton.id (Sub Indo HD)',
-                movie: (id) => `https://nonton.id/play?id=${id}&type=movie`,
-                tv: (id, s, e) => `https://nonton.id/play?id=${id}&type=tv&season=${s}&episode=${e}`,
-                needsImdbId: false
+                name: '🎬 SERVER SUB INDO 1 (Utama)',
+                movie: (id) => `https://vidsrc.in/embed/movie/${id}?sub_lang=id`,
+                tv: (id, s, e) => `https://vidsrc.in/embed/tv/${id}/${s}/${e}?sub_lang=id`
             },
             {
-                name: '⚡ StreamWish (Sub Indo)',
-                movie: (id) => `https://streamwish.to/e/${id}`,
-                tv: (id, s, e) => `https://streamwish.to/e/${id}/${s}/${e}`,
-                needsImdbId: false
+                name: '🚀 SERVER SUB INDO 2 (Alternatif)',
+                movie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1&sub_lang=id`,
+                tv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}&sub_lang=id`
             },
             {
-                name: '💎 LokLok (Multi Sub Indo)',
-                movie: (id) => `https://loklok.com/embed/movie/${id}`,
-                tv: (id, s, e) => `https://loklok.com/embed/tv/${id}/${s}/${e}`,
-                needsImdbId: false
-            },
-            {
-                name: '🎥 Oploverz (Sub Indo Lengkap)',
-                movie: (id) => `https://oploverz.in/embed?id=${id}&type=movie`,
-                tv: (id, s, e) => `https://oploverz.in/embed?id=${id}&type=tv&s=${s}&e=${e}`,
-                needsImdbId: false
-            },
-            {
-                name: '🚀 FilmKeren (Sub Indo HD)',
-                movie: (id) => `https://filmkeren.fun/player?id=${id}&type=movie`,
-                tv: (id, s, e) => `https://filmkeren.fun/player?id=${id}&type=tv&season=${s}&episode=${e}`,
-                needsImdbId: false
-            },
-            {
-                name: '⭐ AnixCloud (Anime + Sub Indo)',
-                movie: (id) => `https://anixcloud.to/embed?tmdb=${id}`,
-                tv: (id, s, e) => `https://anixcloud.to/embed?tmdb=${id}&s=${s}&e=${e}`,
-                needsImdbId: false
-            },
-            {
-                name: '🎮 Anitaku (Anime Sub Indo)',
-                movie: (id) => `https://anitaku.to/embed/${id}`,
-                tv: (id, s, e) => `https://anitaku.to/embed/${id}/${s}/${e}`,
-                needsImdbId: false
-            },
-            {
-                name: '🐉 HydraX (Multi Server)',
-                movie: (id) => `https://playhydrax.com/embed?id=${id}&type=movie`,
-                tv: (id, s, e) => `https://playhydrax.com/embed?id=${id}&type=tv&season=${s}&episode=${e}`,
-                needsImdbId: false
-            },
-            {
-                name: '📺 Gudang Movie (Sub Indo)',
-                movie: (id) => `https://gudangmovie.net/player?id=${id}`,
-                tv: (id, s, e) => `https://gudangmovie.net/player?id=${id}?season=${s}&episode=${e}`,
-                needsImdbId: false
-            },
-            {
-                name: '🎬 MultiqoTV (Sub Indo)',
-                movie: (id) => `https://multiqotv.com/embed/movie/${id}`,
-                tv: (id, s, e) => `https://multiqotv.com/embed/tv/${id}/${s}/${e}`,
-                needsImdbId: false
-            }
-        ];
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const tmdbId = urlParams.get('id'); 
-        const type = urlParams.get('type') || 'movie'; 
-        let currentSeason = parseInt(urlParams.get('s')) || 1;
-        let currentEpisode = parseInt(urlParams.get('e')) || 1;
-        let currentServerIndex = parseInt(urlParams.get('server')) || 0;
-        let maxEpisodesInSeason = 24;
-        let contentData = null;
-
-        const playerIframe = document.getElementById('videoPlayer');
-
-        if (tmdbId) {
-            initializeControls();
-            fetchContentDetails();
-            fetchRecommendations();
-            tambahkanTombolLapor();
-        } else {
-            document.getElementById('streamTitle').innerText = "Akses Ditolak";
-            document.getElementById('infoBoxContainer').innerHTML = "⚠️ Parameter URL tidak lengkap. Kembali ke halaman Home.";
-        }
-
-        function initializeControls() {
-            const serverContainer = document.getElementById('serverButtons');
-            serverContainer.innerHTML = '';
-            STREAMING_SERVERS.forEach((server, index) => {
-                const btn = document.createElement('button');
-                btn.className = `server-btn ${index === currentServerIndex ? 'active' : ''}`;
-                btn.innerText = server.name;
-                btn.onclick = () => switchServer(index);
-                serverContainer.appendChild(btn);
-            });
-        }
-
-        function switchServer(index) {
-            currentServerIndex = index;
-            document.querySelectorAll('.server-btn').forEach((btn, i) => {
-                btn.classList.toggle('active', i === currentServerIndex);
-            });
-            updatePlayerSource();
-        }
-
-        function updatePlayerSource() {
-            const server = STREAMING_SERVERS[currentServerIndex];
-            if (!server || !contentData) return;
-
-            try {
-                let src = '';
-                if (type === 'movie') {
-                    src = server.movie(tmdbId);
-                    document.getElementById('tvNavGroup').classList.remove('active'); 
-                } else if (type === 'tv') {
-                    src = server.tv(tmdbId, currentSeason, currentEpisode);
-                    document.getElementById('tvNavGroup').classList.add('active'); 
-                }
-                
-                playerIframe.src = src;
-                console.log('Loading:', src);
-            } catch (err) {
-                console.error('Error loading player:', err);
-            }
-        }
-
-        function tambahkanTombolLapor() {
-            const infoBox = document.getElementById('infoBoxContainer');
-            if (infoBox) {
-                infoBox.innerHTML = `
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <div>✅ <b>10 Server dengan Sub Indo Gratis! (VidSrc Dihilangkan)</b></div>
-                        <div style="margin-top: 5px; padding-top: 8px; border-top: 1px dashed rgba(0,255,136,0.3);">
-                            💡 <b>Tip:</b> Semua server sudah punya subtitle Indonesia. Jika buffering, pindah server lain.
-                        </div>
-                        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(0,255,136,0.3); font-size: 11px;">
-                            🆔 <b>TMDB ID:</b> ${tmdbId} | <b>Status:</b> Siap Diputar
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        function fetchContentDetails() {
-            fetch(`${BASE_URL}/${type}/${tmdbId}?api_key=${TMDB_API_KEY}&language=en-US`)
-                .then(res => res.json())
-                .then(data => {
-                    contentData = data;
-                    const title = data.title || data.name;
-                    if(!title) return;
-                    
-                    if (type === 'movie') {
-                        document.getElementById('streamTitle').innerText = title;
-                        document.getElementById('streamMeta').innerText = `Rilis: ${data.release_date || 'N/A'} | Rating: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
-                    } else {
-                        document.getElementById('streamTitle').innerText = `${title} (S${currentSeason} E${currentEpisode})`;
-                        document.getElementById('streamMeta').innerText = `Rating: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
-                        
-                        if (data.seasons) {
-                            const seasonObj = data.seasons.find(s => s.season_number === currentSeason);
-                            maxEpisodesInSeason = seasonObj ? seasonObj.episode_count : 24;
-                        }
-                        document.getElementById('prevEpBtn').disabled = (currentEpisode <= 1);
-                        document.getElementById('nextEpBtn').disabled = (currentEpisode >= maxEpisodesInSeason);
-                    }
-                    
-                    document.getElementById('streamOverview').innerText = data.overview || "Sinopsis belum tersedia.";
-                    document.title = `Nonton ${title} - StreamAuto`;
-                    
-                    updatePlayerSource();
-                })
-                .catch(err => console.error("Error fetching TMDB:", err));
-        }
-
-        function navigateEpisode(direction) {
-            currentEpisode += direction;
-            if (currentEpisode < 1) currentEpisode = 1;
-            if (currentEpisode > maxEpisodesInSeason) currentEpisode = maxEpisodesInSeason;
-
-            const newUrl = `stream.html?id=${tmdbId}&type=tv&s=${currentSeason}&e=${currentEpisode}&server=${currentServerIndex}`;
-            window.history.pushState({ path: newUrl }, '', newUrl);
-
-            updatePlayerSource();
-        }
-
-        function fetchRecommendations() {
-            const titleText = type === 'movie' ? "Rekomendasi Film Serupa 🎬" : "Rekomendasi Serial Serupa 📺";
-            document.getElementById('recTitle').innerText = titleText;
-
-            fetch(`${BASE_URL}/${type}/${tmdbId}/recommendations?api_key=${TMDB_API_KEY}&language=en-US`)
-                .then(res => res.json())
-                .then(data => {
-                    const grid = document.getElementById('recommendationGrid');
-                    grid.innerHTML = '';
-                    
-                    if (!data.results || data.results.length === 0) {
-                        grid.innerHTML = "<p style='color:#666; grid-column: 1/-1;'>Tidak ada rekomendasi serupa.</p>";
-                        return;
-                    }
-
-                    data.results.slice(0, 6).forEach(item => {
-                        const title = item.title || item.name;
-                        if (!item.poster_path) return;
-                        const poster = `${IMAGE_BASE_URL}${item.poster_path}`;
-                        const targetUrl = `stream.html?id=${item.id}&type=${type}&server=${currentServerIndex}`;
-
-                        const card = document.createElement('div');
-                        card.className = 'movie-card';
-                        card.innerHTML = `
-                            <a href="${targetUrl}">
-                                <img src="${poster}" alt="${title}" loading="lazy">
-                                <div class="movie-info">
-                                    <h3>${title}</h3>
-                                    <span class="rating">⭐ ${item.vote_average ? item.vote_average.toFixed(1) : '0.0'}</span>
-                                </div>
-                            </a>
-                        `;
-                        grid.appendChild(card);
-                    });
-                })
-                .catch(err => console.error("Error recommendations:", err));
-        }
-    </script>
-</body>
-</html>        .movie-card img { width: 100%; height: 300px; object-fit: cover; }
-        .movie-info { padding: 15px; background: rgba(0, 0, 0, 0.8); }
-        .rating { display: inline-block; background: #ff6b6b; padding: 5px 10px; border-radius: 5px; font-size: 0.9em; font-weight: bold; }
-        @media (max-width: 768px) { .control-group { flex-direction: column; align-items: stretch; } .home-btn, .server-btn { width: 100%; text-align: center; justify-content: center; } }
-    </style>
-</head>
-<body>
-
-    <div class="stream-container">
-        <div class="control-panel">
-            <h3>⚙️ Pilihan Server Player Premium</h3>
-            <div class="control-row">
-                <div class="control-group">
-                    <a href="index.html" class="home-btn">🏠 HOME</a>
-                    <div id="serverButtons" class="control-group" style="display: inline-flex; gap: 8px; flex-wrap: wrap;"></div>
-                </div>
-            </div>
-            <div id="infoBoxContainer" class="info-box"></div>
-        </div>
-
-        <div class="player-wrapper">
-            <iframe id="videoPlayer" src="" allowfullscreen scrolling="no" allow="autoplay; encrypted-media"></iframe>
-        </div>
-
-        <div class="navigation-bar" id="tvNavGroup">
-            <button id="prevEpBtn" class="stream-btn" onclick="navigateEpisode(-1)">⏮️ Episode Seb</button>
-            <button id="nextEpBtn" class="stream-btn primary" onclick="navigateEpisode(1)">Episode Sel ⏭️</button>
-        </div>
-
-        <div class="content-details">
-            <h1 id="streamTitle">Memuat Judul...</h1>
-            <div id="streamMeta" class="meta"></div>
-            <p id="streamOverview" class="overview"></p>
-        </div>
-
-        <h3 class="section-title" id="recTitle">Rekomendasi Serupa 🎬</h3>
-        <div id="recommendationGrid" class="movie-grid">
-            <p style='color:#666; padding: 20px;'>Memuat rekomendasi serupa...</p>
-        </div>
-    </div>
-
-    <script>
-        const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e'; 
-        const BASE_URL = 'https://api.themoviedb.org/3';
-        const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
-
-        // 4 Server Premium Utama pilihan Rido + 1 Server Jalur Darurat Auto-Suntik Sub Indo
-        const STREAMING_SERVERS = [
-            {
-                name: '⚡ P2P STREAM (Sub Indo)',
-                movie: (id) => `https://embed.p2pstream.xyz/embed/movie/${id}`,
-                tv: (id, s, e) => `https://embed.p2pstream.xyz/embed/tv/${id}/${s}/${e}`
-            },
-            {
-                name: '🚀 TURBOVIP (VIP Sub Indo)',
-                movie: (id) => `https://turbovip.site/embed/movie/${id}`,
-                tv: (id, s, e) => `https://turbovip.site/embed/tv/${id}/${s}/${e}`
-            },
-            {
-                name: '📺 CAST PLAYER (Sub Indo)',
-                movie: (id) => `https://castplayer.club/embed/movie/${id}`,
-                tv: (id, s, e) => `https://castplayer.club/embed/tv/${id}/${s}/${e}`
-            },
-            {
-                name: '🐉 HYDRAX (Multi Sub)',
-                movie: (id) => `https://playhydrax.com/embed/movie/${id}`,
-                tv: (id, s, e) => `https://playhydrax.com/embed/tv/${id}/${s}/${e}`
-            },
-            {
-                name: '🚨 JALUR DARURAT (Auto-Suntik Sub Indo)',
+                name: '📺 SERVER SUB INDO 3 (Cadangan)',
                 movie: (id) => `https://vidsrc.xyz/embed/movie?tmdb=${id}&sub_lang=id`,
                 tv: (id, s, e) => `https://vidsrc.xyz/embed/tv?tmdb=${id}&season=${s}&episode=${e}&sub_lang=id`
+            },
+            {
+                name: '🐉 VIP EXTRA (Multi Sub)',
+                movie: (id) => `https://playhydrax.com/embed/movie/${id}`,
+                tv: (id, s, e) => `https://playhydrax.com/embed/tv/${id}/${s}/${e}`
             }
         ];
 
@@ -676,8 +208,8 @@ body {
             fetchRecommendations();
             tambahkanTombolLapor(); 
         } else {
-            document.getElementById('streamTitle').innerText = "Akses Ditolak";
-            document.getElementById('infoBoxContainer').innerHTML = "⚠️ Parameter URL tidak lengkap. Kembali ke halaman Home.";
+            document.getElementById('streamTitle').innerText = "Parameter Error";
+            document.getElementById('infoBoxContainer').innerHTML = "⚠️ Hubungkan melalui poster halaman index.html.";
         }
 
         function initializeControls() {
@@ -718,11 +250,11 @@ body {
             if (infoBox) {
                 infoBox.innerHTML = `
                     <div style="display: flex; flex-direction: column; gap: 5px;">
-                        <div>✅ <b>Mode Auto-Embed Terkoneksi:</b> Sinkronisasi ID TMDB Berhasil.</div>
+                        <div>✨ <b>Sistem Sinkronisasi Berhasil:</b> Server otomatis mencari file video & subtitle Indonesia terakurat.</div>
                         <div style="margin-top: 5px; padding-top: 5px; border-top: 1px dashed rgba(0,255,136,0.3)">
-                            ⚠️ <b>Video Kosong / Gak Ada Sub Indo di Server Ini?</b> 
+                            ❌ <b>Video Kosong / Subtitle Belum Muncul?</b> 
                             <button onclick="pindahServerOtomatis()" style="background:#ffa500; border:none; color:#000; padding:4px 10px; border-radius:3px; font-weight:bold; cursor:pointer; font-size:11px; margin-left:5px;">
-                                🔄 Pindah ke Server Cadangan / Darurat
+                                🔄 Paksa Cari di Server Cadangan Lain
                             </button>
                         </div>
                     </div>
@@ -734,7 +266,7 @@ body {
             currentServerIndex++;
             if (currentServerIndex >= STREAMING_SERVERS.length) {
                 currentServerIndex = 0; 
-                alert("Semua server premium telah dicoba. Jika masih kosong, gunakan Jalur Darurat di pilihan server ujung kanan.");
+                alert("Semua server alternatif sudah dicoba. Jika film sangat baru, harap tunggu beberapa jam sampai pihak pengunggah menyinkronkan file video.");
             }
             switchServer(currentServerIndex);
         }
@@ -748,10 +280,10 @@ body {
                     
                     if (type === 'movie') {
                         document.getElementById('streamTitle').innerText = title;
-                        document.getElementById('streamMeta').innerText = `Rilis: ${data.release_date || 'N/A'} | Rating: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
+                        document.getElementById('streamMeta').innerText = `Tahun Rilis: ${data.release_date ? data.release_date.split('-')[0] : 'N/A'} | Rating Global: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
                     } else {
-                        document.getElementById('streamTitle').innerText = `${title} (S${currentSeason} E${currentEpisode})`;
-                        document.getElementById('streamMeta').innerText = `Rating: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
+                        document.getElementById('streamTitle').innerText = `${title} (Season ${currentSeason} - Episode ${currentEpisode})`;
+                        document.getElementById('streamMeta').innerText = `Rating Global: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
                         
                         if (data.seasons) {
                             const seasonObj = data.seasons.find(s => s.season_number === currentSeason);
@@ -761,8 +293,8 @@ body {
                         document.getElementById('nextEpBtn').disabled = (currentEpisode >= maxEpisodesInSeason);
                     }
                     
-                    document.getElementById('streamOverview').innerText = data.overview || "Sinopsis belum diterjemahkan ke Bahasa Indonesia.";
-                    document.title = `Nonton ${title} - Premium Engine`;
+                    document.getElementById('streamOverview').innerText = data.overview || "Sinopsis untuk konten ini belum tersedia atau belum diterjemahkan.";
+                    document.title = `Nonton ${title} - StreamAuto Premium`;
                 })
                 .catch(err => console.error("Error fetching TMDB:", err));
         }
@@ -787,7 +319,7 @@ body {
                     grid.innerHTML = '';
                     
                     if (!data.results || data.results.length === 0) {
-                        grid.innerHTML = "<p style='color:#666; grid-column: 1/-1;'>Tidak ada rekomendasi serupa.</p>";
+                        grid.innerHTML = "<p style='color:#666; grid-column: 1/-1;'>Tidak ada data rekomendasi serupa untuk film ini.</p>";
                         return;
                     }
 
@@ -795,423 +327,7 @@ body {
                         const title = item.title || item.name;
                         if (!item.poster_path) return;
                         const poster = `${IMAGE_BASE_URL}${item.poster_path}`;
-                        const targetUrl = `?id=${item.id}&type=${type}&server=${currentServerIndex}`;
-
-                        const card = document.createElement('div');
-                        card.className = 'movie-card';
-                        card.innerHTML = `
-                            <a href="${targetUrl}">
-                                <img src="${poster}" alt="${title}" loading="lazy">
-                                <div class="movie-info">
-                                    <h3>${title}</h3>
-                                    <span class="rating">⭐ ${item.vote_average ? item.vote_average.toFixed(1) : '0.0'}</span>
-                                </div>
-                            </a>
-                        `;
-                        grid.appendChild(card);
-                    });
-                })
-                .catch(err => console.error("Error recommendations:", err));
-        }
-    </script>
-</body>
-</html>    gap: 8px;
-    align-items: center;
-}
-
-.home-btn {
-    padding: 8px 16px;
-    background-color: #ff6b6b;
-    color: #fff;
-    border: 1px solid #ff6b6b;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 12px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-}
-
-.home-btn:hover {
-    background-color: #ff5252;
-    border-color: #ff5252;
-}
-
-.server-btn {
-    padding: 8px 14px;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: 1px solid #444;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
-
-.server-btn:hover {
-    background-color: rgba(255, 107, 107, 0.2);
-    border-color: #ff6b6b;
-}
-
-.server-btn.active {
-    background-color: #3f51b5;
-    border-color: #3f51b5;
-}
-
-.info-box {
-    background: rgba(255, 165, 0, 0.1);
-    border: 1px solid #ffa500;
-    padding: 10px 15px;
-    border-radius: 5px;
-    font-size: 12px;
-    margin-top: 10px;
-    color: #ffa500;
-}
-
-.navigation-bar {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    margin-bottom: 20px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 15px 20px;
-    border-radius: 8px;
-    border-left: 4px solid #ff6b6b;
-    display: none; /* Otomatis aktif jika tipe TV */
-}
-
-.stream-btn {
-    padding: 10px 20px;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: 1px solid #444;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 14px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.stream-btn:hover {
-    background-color: rgba(255, 107, 107, 0.2);
-    border-color: #ff6b6b;
-}
-
-.stream-btn.primary {
-    background-color: #ff6b6b;
-    border-color: #ff6b6b;
-}
-
-.stream-btn:disabled {
-    background-color: rgba(0, 0, 0, 0.3);
-    color: #666;
-    cursor: not-allowed;
-    border-color: #333;
-}
-
-.content-details {
-    background: rgba(0, 0, 0, 0.6);
-    padding: 25px;
-    border-radius: 10px;
-    border-left: 4px solid #ff6b6b;
-    margin-bottom: 30px;
-}
-
-.content-details h1 {
-    margin: 0 0 10px 0;
-    font-size: 2em;
-    color: #ff6b6b;
-}
-
-.content-details .meta {
-    color: #999;
-    font-size: 14px;
-    margin-bottom: 15px;
-}
-
-.content-details .overview {
-    color: #ccc;
-    line-height: 1.6;
-    font-size: 1em;
-}
-
-.section-title {
-    font-size: 1.5em;
-    border-left: 4px solid #ff6b6b;
-    padding-left: 10px;
-    margin: 40px 0 20px 0;
-}
-
-.movie-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-}
-
-.movie-card {
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: 10px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.movie-card:hover {
-    transform: translateY(-10px) scale(1.05);
-}
-
-.movie-card a {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-}
-
-.movie-card img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-}
-
-.movie-info {
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.8);
-}
-
-.rating {
-    display: inline-block;
-    background: #ff6b6b;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 0.9em;
-    font-weight: bold;
-}
-
-.error-msg {
-    background: rgba(255, 107, 107, 0.2);
-    border: 1px solid #ff6b6b;
-    color: #ff6b6b;
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 20px;
-}
-
-@media (max-width: 768px) {
-    .control-group {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .home-btn, .server-btn {
-        width: 100%;
-        text-align: center;
-        justify-content: center;
-    }
-}
-    </style>
-</head>
-<body>
-
-    <div class="stream-container">
-        <div class="control-panel">
-            <h3>⚙️ Kontrol & Pilihan Server Player</h3>
-            <div class="control-row">
-                <div class="control-group">
-                    <!-- Tombol Home diselipkan langsung di awal deretan server -->
-                    <a href="index.html" class="home-btn">🏠 HOME</a>
-                    <div id="serverButtons" class="control-group" style="display: inline-flex; gap: 8px; flex-wrap: wrap;"></div>
-                </div>
-            </div>
-            <div class="info-box">
-                💡 <b>Catatan Server Kustom:</b> Server P2P, TURBOVIP, CAST, dan HYDRAX membaca file video berdasarkan kode file manual yang dikirim melalui parameter <code>&vid=ID_VIDEO</code> pada URL.
-            </div>
-        </div>
-
-        <div id="errorMsg"></div>
-
-        <div class="player-wrapper">
-            <iframe id="vidsrcEngine" src="" allowfullscreen scrolling="no" allow="autoplay; encrypted-media"></iframe>
-        </div>
-
-        <div class="navigation-bar" id="tvNavGroup">
-            <button id="prevEpBtn" class="stream-btn" onclick="navigateEpisode(-1)">⏮️ Episode Seb</button>
-            <button id="nextEpBtn" class="stream-btn primary" onclick="navigateEpisode(1)">Episode Sel ⏭️</button>
-        </div>
-
-        <div class="content-details">
-            <h1 id="streamTitle">Memuat Judul...</h1>
-            <div id="streamMeta" class="meta"></div>
-            <p id="streamOverview" class="overview"></p>
-        </div>
-
-        <h3 class="section-title" id="recTitle">Rekomendasi Serupa 🎬</h3>
-        <div id="recommendationGrid" class="movie-grid">
-            <p style='color:#666; padding: 20px;'>Memuat rekomendasi serupa...</p>
-        </div>
-    </div>
-
-    <script>
-        const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e'; 
-        const BASE_URL = 'https://api.themoviedb.org/3';
-        const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
-
-        // Hanya menyisakan 4 rumpun server kustom sesuai instruksi Anda
-        const STREAMING_SERVERS = [
-            {
-                name: '⚡ P2P STREAM',
-                movie: (vid) => `https://embed.p2pstream.xyz/e/${vid}`,
-                tv: (vid, s, e) => `https://embed.p2pstream.xyz/e/${vid}?s=${s}&e=${e}`
-            },
-            {
-                name: '🚀 TURBOVIP',
-                movie: (vid) => `https://turbovip.site/embed/${vid}`,
-                tv: (vid, s, e) => `https://turbovip.site/embed/${vid}?season=${s}&episode=${e}`
-            },
-            {
-                name: '📺 CAST PLAYER',
-                movie: (vid) => `https://castplayer.club/embed/${vid}`,
-                tv: (vid, s, e) => `https://castplayer.club/embed/${vid}?s=${s}&e=${e}`
-            },
-            {
-                name: '🐉 HYDRAX',
-                movie: (vid) => `https://playhydrax.com/?v=${vid}`,
-                tv: (vid, s, e) => `https://playhydrax.com/?v=${vid}&s=${s}&e=${e}`
-            }
-        ];
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const tmdbId = urlParams.get('id'); // Untuk metadata TMDB
-        const fileVideoId = urlParams.get('vid') || 'demo'; // Mengambil File ID video kustom
-        const type = urlParams.get('type') || 'movie'; 
-        let currentSeason = parseInt(urlParams.get('s')) || 1;
-        let currentEpisode = parseInt(urlParams.get('e')) || 1;
-        let currentServerIndex = parseInt(urlParams.get('server')) || 0;
-        let maxEpisodesInSeason = 24;
-
-        const playerIframe = document.getElementById('vidsrcEngine');
-
-        if (tmdbId || fileVideoId) {
-            initializeControls();
-            updatePlayerSource();
-            if (tmdbId) {
-                fetchContentDetails();
-                fetchRecommendations();
-            } else {
-                document.getElementById('streamTitle').innerText = "File Konten Mandiri (ID: " + fileVideoId + ")";
-                document.getElementById('streamOverview').innerText = "Informasi TMDB tidak dimuat karena parameter ?id= tidak diisi.";
-            }
-        } else {
-            document.getElementById('streamTitle').innerText = "Akses Ditolak";
-            showErrorMsg("Parameter URL tidak lengkap. Butuh ?vid=ID_VIDEO atau ?id=TMDB_ID");
-        }
-
-        function initializeControls() {
-            const serverContainer = document.getElementById('serverButtons');
-            serverContainer.innerHTML = '';
-            STREAMING_SERVERS.forEach((server, index) => {
-                const btn = document.createElement('button');
-                btn.className = `server-btn ${index === currentServerIndex ? 'active' : ''}`;
-                btn.innerText = server.name;
-                btn.onclick = () => switchServer(index);
-                serverContainer.appendChild(btn);
-            });
-        }
-
-        function switchServer(index) {
-            currentServerIndex = index;
-            document.querySelectorAll('.server-btn').forEach((btn, i) => {
-                btn.classList.toggle('active', i === currentServerIndex);
-            });
-            updatePlayerSource();
-        }
-
-        function updatePlayerSource() {
-            const server = STREAMING_SERVERS[currentServerIndex];
-            if (!server) return;
-
-            try {
-                if (type === 'movie') {
-                    playerIframe.src = server.movie(fileVideoId);
-                    document.getElementById('tvNavGroup').style.display = 'none'; 
-                } else if (type === 'tv') {
-                    playerIframe.src = server.tv(fileVideoId, currentSeason, currentEpisode);
-                    document.getElementById('tvNavGroup').style.display = 'flex'; 
-                }
-                showErrorMsg('');
-            } catch (err) {
-                showErrorMsg('Gagal memuat player: ' + err.message);
-            }
-        }
-
-        function showErrorMsg(msg) {
-            const container = document.getElementById('errorMsg');
-            if (msg) {
-                container.innerHTML = `<div class="error-msg">⚠️ ${msg}</div>`;
-            } else {
-                container.innerHTML = '';
-            }
-        }
-
-        function fetchContentDetails() {
-            fetch(`${BASE_URL}/${type}/${tmdbId}?api_key=${TMDB_API_KEY}&language=id-ID&include_adult=true`)
-                .then(res => res.json())
-                .then(data => {
-                    const title = data.title || data.name;
-                    if(!title) return;
-                    
-                    if (type === 'movie') {
-                        document.getElementById('streamTitle').innerText = title;
-                        document.getElementById('streamMeta').innerText = `Rilis: ${data.release_date || 'N/A'} | Rating: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
-                    } else {
-                        document.getElementById('streamTitle').innerText = `${title} (S${currentSeason} E${currentEpisode})`;
-                        document.getElementById('streamMeta').innerText = `Rating: ⭐ ${data.vote_average ? data.vote_average.toFixed(1) : '0.0'}`;
-                        
-                        if (data.seasons) {
-                            const seasonObj = data.seasons.find(s => s.season_number === currentSeason);
-                            maxEpisodesInSeason = seasonObj ? seasonObj.episode_count : 24;
-                        }
-                        document.getElementById('prevEpBtn').disabled = (currentEpisode <= 1);
-                        document.getElementById('nextEpBtn').disabled = (currentEpisode >= maxEpisodesInSeason);
-                    }
-                    
-                    document.getElementById('streamOverview').innerText = data.overview || "Sinopsis tidak tersedia dalam Bahasa Indonesia.";
-                    document.title = `Nonton ${title} - Premium Engine`;
-                })
-                .catch(err => console.error("Error fetching TMDB:", err));
-        }
-
-        function navigateEpisode(direction) {
-            currentEpisode += direction;
-            if (currentEpisode < 1) currentEpisode = 1;
-            if (currentEpisode > maxEpisodesInSeason) currentEpisode = maxEpisodesInSeason;
-
-            const newUrl = `?id=${tmdbId}&vid=${fileVideoId}&type=tv&s=${currentSeason}&e=${currentEpisode}&server=${currentServerIndex}`;
-            window.history.pushState({ path: newUrl }, '', newUrl);
-
-            updatePlayerSource();
-            fetchContentDetails();
-        }
-
-        function fetchRecommendations() {
-            fetch(`${BASE_URL}/${type}/${tmdbId}/recommendations?api_key=${TMDB_API_KEY}&language=id-ID&include_adult=true`)
-                .then(res => res.json())
-                .then(data => {
-                    const grid = document.getElementById('recommendationGrid');
-                    grid.innerHTML = '';
-                    
-                    if (!data.results || data.results.length === 0) {
-                        grid.innerHTML = "<p style='color:#666; grid-column: 1/-1;'>Tidak ada rekomendasi serupa.</p>";
-                        return;
-                    }
-
-                    data.results.slice(0, 6).forEach(item => {
-                        const title = item.title || item.name;
-                        const poster = item.poster_path ? `${IMAGE_BASE_URL}${item.poster_path}` : 'https://via.placeholder.com/300x450?text=No+Image';
-                        // Mengoper parameter TMDB id lama beserta placeholder vid baru
-                        const targetUrl = `?id=${item.id}&vid=${fileVideoId}&type=${type}&server=${currentServerIndex}`;
+                        const targetUrl = `stream.html?id=${item.id}&type=${type}&server=${currentServerIndex}`;
 
                         const card = document.createElement('div');
                         card.className = 'movie-card';
