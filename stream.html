@@ -72,7 +72,7 @@
             border: none;
         }
 
-        /* Kontrol Pilihan Server Dropdown (Clean & Neat) */
+        /* Kontrol Pilihan Server Dropdown */
         .server-control-box {
             max-width: 1000px;
             margin: 15px auto 0 auto;
@@ -97,7 +97,7 @@
             font-weight: 600;
             outline: none;
             cursor: pointer;
-            min-width: 250px;
+            min-width: 290px;
             transition: border-color 0.2s;
         }
         .server-dropdown:focus {
@@ -185,22 +185,20 @@
         </div>
     </div>
 
-    <!-- Dropdown Menu Pilihan Server dengan Ekstra Server P2P & HydraX -->
+    <!-- Dropdown Menu Pilihan 10 Server Optimasi Sub Indo / SEA -->
     <div class="server-control-box">
-        <span class="server-label">Ganti Sumber Video:</span>
+        <span class="server-label">Pilih Jalur Player:</span>
         <select id="serverSelect" class="server-dropdown" onchange="switchServer(this.value)">
-            <option value="1">Server 1 (VidSrc Me) — Populer</option>
-            <option value="2">Server 2 (VidSrc To) — Kecepatan Tinggi</option>
-            <option value="3">Server 3 (HydraX Engine) — Multi-Resolusi</option>
-            <option value="4">Server 4 (P2P Stream Network) — Buffer Rendah</option>
-            <option value="5">Server 5 (SuperEmbed Global)</option>
-            <option value="6">Server 6 (AutoEmbed Sub Indo)</option>
-            <option value="7">Server 7 (Filemoon Direct)</option>
-            <option value="8">Server 8 (Upstream CDN)</option>
-            <option value="9">Server 9 (EmbedSu Multi)</option>
-            <option value="10">Server 10 (NapiEmbed Cloud)</option>
-            <option value="11">Server 11 (SmashyStream API)</option>
-            <option value="12">Server 12 (VidSrc CC PRO)</option>
+            <option value="1">Server 1 (NapiEmbed Cloud) — Utama Sub Indo</option>
+            <option value="2">Server 2 (VidSrc To) — Auto Subtitle Indonesia</option>
+            <option value="3">Server 3 (VidSrc Asia) — Node Regional Tercepat</option>
+            <option value="4">Server 4 (VidSrc VIP) — Player Cadangan Asia</option>
+            <option value="5">Server 5 (VidSrc Me) — Multi-Bahasa Injeksi ID</option>
+            <option value="6">Server 6 (EmbedSu Engine) — Jalur Alternatif</option>
+            <option value="7">Server 7 (SuperEmbed Global) — Proksi Server Asia</option>
+            <option value="8">Server 8 (HydraX Premium) — Streaming Multi-Resolusi</option>
+            <option value="9">Server 9 (Filemoon Cloud) — Server Cloud CDN</option>
+            <option value="10">Server 10 (Upstream Direct) — Jalur Kecepatan Tinggi</option>
         </select>
     </div>
 
@@ -226,61 +224,57 @@
         const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e';
         const BASE_URL = 'https://api.themoviedb.org/3';
 
-        // Mengambil parameter dari URL browser
+        // Mengambil parameter rute dari tautan indeks
         const urlParams = new URLSearchParams(window.location.search);
         const contentId = urlParams.get('id');
         const contentType = urlParams.get('type') || 'movie';
         const season = urlParams.get('s') || '1';
         const episode = urlParams.get('e') || '1';
 
-        // 1. ENGINE ROUTING 12 SERVER (TERMASUK HYDRAX & P2P ALGORITHMS)
+        // 1. ENGINE ROUTING 10 SERVER ASIA TENGGARA & GLOBAL OPTIMIZED
         function getEmbedUrl(serverValue) {
             const num = parseInt(serverValue);
             if (contentType === 'movie') {
                 switch(num) {
-                    case 1: return `https://vidsrc.me/embed/movie?tmdb=${contentId}&sub.lang=id`;
-                    case 2: return `https://vidsrc.to/embed/movie/${contentId}?sub_id=indonesian`;
-                    case 3: return `https://playhydrax.com/?v=${contentId}&tmdb=1`; // HydraX Dedicated Routing
-                    case 4: return `https://vidsrc.pro/embed/movie/${contentId}`; // P2P High Load Delivery
-                    case 5: return `https://multiembed.mov/?video_id=${contentId}&tmdb=1`;
-                    case 6: return `https://autoembed.to/movie/tmdb/${contentId}?lang=id`;
-                    case 7: return `https://filemoon.sx/e/${contentId}`; 
-                    case 8: return `https://upstream.to/embed-${contentId}.html`; 
-                    case 9: return `https://embed.su/embed/movie/${contentId}`;
-                    case 10: return `https://play.napiembed.my.id/movie/${contentId}`;
-                    case 11: return `https://embed.smashystream.com/playere.php?tmdb=${contentId}`;
-                    case 12: return `https://vidsrc.cc/v2/embed/movie/${contentId}`;
-                    default: return `https://vidsrc.me/embed/movie?tmdb=${contentId}&sub.lang=id`;
+                    case 1: return `https://play.napiembed.my.id/movie/${contentId}?lang=id`;
+                    case 2: return `https://vidsrc.to/embed/movie/${contentId}?sub_id=indonesian&sub_default=1`;
+                    case 3: return `https://vidsrc.stream/embed/movie/${contentId}&sub.lang=id`;
+                    case 4: return `https://vidsrc.vip/embed/movie/${contentId}?lang=id`;
+                    case 5: return `https://vidsrc.me/embed/movie?tmdb=${contentId}&sub.lang=id&sub.default=1`;
+                    case 6: return `https://embed.su/embed/movie/${contentId}?sub_id=id`;
+                    case 7: return `https://multiembed.mov/?video_id=${contentId}&tmdb=1`;
+                    case 8: return `https://playhydrax.com/?v=${contentId}&tmdb=1`;
+                    case 9: return `https://filemoon.sx/e/${contentId}`;
+                    case 10: return `https://upstream.to/embed-${contentId}.html`;
+                    default: return `https://play.napiembed.my.id/movie/${contentId}?lang=id`;
                 }
             } else {
                 switch(num) {
-                    case 1: return `https://vidsrc.me/embed/tv?tmdb=${contentId}&sea=${season}&epi=${episode}&sub.lang=id`;
-                    case 2: return `https://vidsrc.to/embed/tv/${contentId}/${season}/${episode}?sub_id=indonesian`;
-                    case 3: return `https://playhydrax.com/?v=${contentId}&s=${season}&e=${episode}`;
-                    case 4: return `https://vidsrc.pro/embed/tv/${contentId}/${season}/${episode}`;
-                    case 5: return `https://multiembed.mov/?video_id=${contentId}&tmdb=1&s=${season}&e=${episode}`;
-                    case 6: return `https://autoembed.to/tv/tmdb/${contentId}-${season}-${episode}?lang=id`;
-                    case 7: return `https://filemoon.sx/e/${contentId}_s${season}e${episode}`;
-                    case 8: return `https://upstream.to/embed-${contentId}-${season}-${episode}.html`;
-                    case 9: return `https://embed.su/embed/tv/${contentId}/${season}/${episode}`;
-                    case 10: return `https://play.napiembed.my.id/tv/${contentId}/${season}/${episode}`;
-                    case 11: return `https://embed.smashystream.com/playere.php?tmdb=${contentId}&season=${season}&episode=${episode}`;
-                    case 12: return `https://vidsrc.cc/v2/embed/tv/${contentId}/${season}/${episode}`;
-                    default: return `https://vidsrc.me/embed/tv?tmdb=${contentId}&sea=${season}&epi=${episode}&sub.lang=id`;
+                    case 1: return `https://play.napiembed.my.id/tv/${contentId}/${season}/${episode}?lang=id`;
+                    case 2: return `https://vidsrc.to/embed/tv/${contentId}/${season}/${episode}?sub_id=indonesian&sub_default=1`;
+                    case 3: return `https://vidsrc.stream/embed/tv/${contentId}/${season}/${episode}&sub.lang=id`;
+                    case 4: return `https://vidsrc.vip/embed/tv/${contentId}/${season}/${episode}?lang=id`;
+                    case 5: return `https://vidsrc.me/embed/tv?tmdb=${contentId}&sea=${season}&epi=${episode}&sub.lang=id&sub.default=1`;
+                    case 6: return `https://embed.su/embed/tv/${contentId}/${season}/${episode}?sub_id=id`;
+                    case 7: return `https://multiembed.mov/?video_id=${contentId}&tmdb=1&s=${season}&e=${episode}`;
+                    case 8: return `https://playhydrax.com/?v=${contentId}&s=${season}&e=${episode}`;
+                    case 9: return `https://filemoon.sx/e/${contentId}_s${season}e${episode}`;
+                    case 10: return `https://upstream.to/embed-${contentId}-${season}-${episode}.html`;
+                    default: return `https://play.napiembed.my.id/tv/${contentId}/${season}/${episode}?lang=id`;
                 }
             }
         }
 
-        // Fungsi pemicu saat dropdown diubah nilainya
+        // Jalankan mekanisme ganti rute saat dropdown berubah
         function switchServer(serverValue) {
             document.getElementById('videoPlayer').src = getEmbedUrl(serverValue);
         }
 
-        // Jalankan Server default (Server 1) saat pertama kali masuk halaman
+        // Set default server pertama ke Server 1 (NapiEmbed Cloud)
         document.getElementById('videoPlayer').src = getEmbedUrl(1);
 
 
-        // 2. FETCH DETAIL DATA UTAMA (BAHASA INDONESIA)
+        // 2. METADATA ENGINE (TMDB BINDING)
         function loadContentDetails() {
             if (!contentId) return;
 
@@ -313,7 +307,7 @@
                 });
         }
 
-        // 3. ENGINE AUTO-TRANSLATE CORES
+        // 3. ENGINE AUTO-TRANSLATE CORES (GOOGLE TRANSLATE PROXY)
         function fetchAndAutoTranslate() {
             const badge = document.getElementById('translateBadge');
             badge.innerText = "Auto-Translate ⏳";
