@@ -6,421 +6,154 @@
     <title>StreamAuto - Platform Streaming Film & Drama</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            background: #0f172a; 
-            color: #f8fafc; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            min-height: 100vh; 
-            overflow-x: hidden;
-        }
+        body { background: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; overflow-x: hidden; }
         
-        /* Header / Navbar */
-        header {
-            background: #1e293b;
-            padding: 15px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid #334155;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        .header-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: #38bdf8;
-            text-decoration: none;
-            letter-spacing: 0.5px;
-        }
+        header { background: #1e293b; padding: 15px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .header-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .logo { font-size: 24px; font-weight: 700; color: #38bdf8; text-decoration: none; }
         .logo span { color: #f8fafc; }
 
-        /* Filter & Search Controls */
-        .controls-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .filter-select {
-            background: #0f172a;
-            color: #cbd5e1;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            padding: 8px 12px;
-            font-size: 13px;
-            outline: none;
-            cursor: pointer;
-            transition: border-color 0.2s ease;
-        }
-        .filter-select:focus {
-            border-color: #38bdf8;
-        }
+        .controls-wrapper { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .filter-select { background: #0f172a; color: #cbd5e1; border: 1px solid #334155; border-radius: 6px; padding: 8px 12px; font-size: 13px; outline: none; cursor: pointer; }
+        .search-container { display: flex; align-items: center; background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 6px 12px; width: 280px; }
+        .search-input { background: transparent; border: none; color: #f8fafc; font-size: 13px; width: 100%; outline: none; }
+        .search-btn { background: transparent; border: none; color: #38bdf8; cursor: pointer; font-size: 14px; }
 
-        .search-container {
-            display: flex;
-            align-items: center;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            padding: 6px 12px;
-            width: 280px;
-            transition: border-color 0.2s ease;
-        }
-        .search-container:focus-within {
-            border-color: #38bdf8;
-        }
-        .search-input {
-            background: transparent;
-            border: none;
-            color: #f8fafc;
-            font-size: 13px;
-            width: 100%;
-            outline: none;
-        }
-        .search-input::placeholder { color: #64748b; }
-        .search-btn {
-            background: transparent;
-            border: none;
-            color: #38bdf8;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        /* Container Utama */
-        .container { 
-            max-width: 1400px; 
-            margin: 0 auto; 
-            padding: 20px; 
-        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .section-title { font-size: 1.3em; border-left: 4px solid #38bdf8; padding-left: 12px; margin: 35px 0 20px 0; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
         
-        .section-title { 
-            font-size: 1.3em; 
-            border-left: 4px solid #38bdf8; 
-            padding-left: 12px; 
-            margin: 35px 0 20px 0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #f8fafc;
-        }
-
-        /* Grid Film */
-        .movie-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); 
-            gap: 20px; 
-            margin-bottom: 20px;
-        }
-        
-        .movie-card { 
-            background: #1e293b; 
-            border-radius: 6px; 
-            overflow: hidden; 
-            transition: transform 0.2s ease, border-color 0.2s ease; 
-            border: 1px solid #334155;
-        }
-        .movie-card:hover { 
-            transform: translateY(-4px);
-            border-color: #38bdf8;
-        }
-        .movie-card a { text-decoration: none; color: inherit; display: block; }
-        .movie-card img { 
-            width: 100%; 
-            height: 250px; 
-            object-fit: cover; 
-        }
-        
-        .movie-info { padding: 12px; background: #1e293b; }
-        .movie-info h3 { 
-            font-size: 0.85em; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            margin-bottom: 6px; 
-            font-weight: 600;
-        }
-        .card-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75em;
-        }
-        .rating { 
-            background: #38bdf8; 
-            color: #0f172a;
-            padding: 2px 6px; 
-            border-radius: 4px; 
-            font-weight: bold; 
-        }
+        .movie-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; }
+        .movie-card { background: #1e293b; border-radius: 6px; overflow: hidden; transition: transform 0.2s; border: 1px solid #334155; }
+        .movie-card:hover { transform: translateY(-4px); border-color: #38bdf8; }
+        .movie-card img { width: 100%; height: 250px; object-fit: cover; }
+        .movie-info { padding: 12px; }
+        .movie-info h3 { font-size: 0.85em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
+        .card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.75em; }
+        .rating { background: #38bdf8; color: #0f172a; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         .year { color: #94a3b8; }
 
-        /* Panel Filter Terintegrasi */
         #filterResultSection { display: none; }
-        .close-panel-btn {
-            background: #334155;
-            color: #f8fafc;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-            margin-left: 15px;
-            font-weight: 600;
-            text-transform: none;
-        }
-        .close-panel-btn:hover { background: #475569; }
+        .close-panel-btn { background: #334155; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-left: 15px; }
+        .loading { text-align: center; padding: 40px 0; color: #64748b; grid-column: 1 / -1; }
 
-        /* Status Loading */
-        .loading {
-            text-align: center;
-            padding: 40px 0;
-            color: #64748b;
-            font-size: 1em;
-            grid-column: 1 / -1;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 40px;
-            background: #0f172a;
-            margin-top: 60px;
-            font-size: 12px;
-            color: #475569;
-            border-top: 1px solid #334155;
-        }
-        
-        @media (max-width: 768px) { 
-            .header-container { flex-direction: column; align-items: stretch; }
-            .controls-wrapper { flex-direction: column; align-items: stretch; gap: 10px; }
-            .search-container { width: 100%; }
-            .movie-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
-            .movie-card img { height: 190px; }
-            .section-title { font-size: 1.1em; }
-        }
+        @media (max-width: 768px) { .movie-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); } }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="header-container">
-            <a href="index.html" class="logo">Stream<span>Auto</span></a>
-            
-            <div class="controls-wrapper">
-                <select id="genreSelect" class="filter-select" onchange="executeFilter()">
-                    <option value="">Semua Genre</option>
-                    <option value="28">Aksi</option>
-                    <option value="10749">Romantis</option>
-                    <option value="27">Horor</option>
-                    <option value="18">Drama</option>
-                    <option value="35">Komedi</option>
-                    <option value="adult">Adult (18+)</option>
-                </select>
-
-                <select id="countrySelect" class="filter-select" onchange="executeFilter()">
-                    <option value="">Semua Negara</option>
-                    <option value="en">Amerika Serikat (USA)</option>
-                    <option value="id">Indonesia</option>
-                    <option value="ko">Korea Selatan</option>
-                    <option value="zh">China</option>
-                    <option value="th">Thailand</option>
-                </select>
-
-                <div class="search-container">
-                    <input type="text" id="searchInput" class="search-input" placeholder="Cari judul..." onkeypress="handleSearchKeyPress(event)">
-                    <button class="search-btn" onclick="executeSearch()">🔍</button>
-                </div>
+<header>
+    <div class="header-container">
+        <a href="index.html" class="logo">Stream<span>Auto</span></a>
+        <div class="controls-wrapper">
+            <select id="genreSelect" class="filter-select" onchange="executeFilter()"><option value="">Semua Genre</option><option value="28">Aksi</option><option value="10749">Romantis</option><option value="27">Horor</option><option value="18">Drama</option><option value="35">Komedi</option></select>
+            <select id="countrySelect" class="filter-select" onchange="executeFilter()"><option value="">Semua Negara</option><option value="en">USA</option><option value="id">Indonesia</option><option value="ko">Korea</option></select>
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Cari judul..." onkeypress="handleSearchKeyPress(event)">
+                <button class="search-btn" onclick="executeSearch()">🔍</button>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
-    <div class="container">
-        
-        <div id="filterResultSection">
-            <h2 class="section-title" id="filterResultTitle">
-                Hasil Pencarian / Filter Konten
-                <button class="close-panel-btn" onclick="resetToHome()">Kembali</button>
-            </h2>
-            <div id="filterGrid" class="movie-grid"></div>
-        </div>
-
-        <div id="mainCategoriesSection">
-            <h2 class="section-title">Box Office USA</h2>
-            <div id="usaGrid" class="movie-grid">
-                <div class="loading">Memuat konten... </div>
-            </div>
-
-            <h2 class="section-title">Film Indonesia</h2>
-            <div id="indonesianGrid" class="movie-grid">
-                <div class="loading">Memuat konten... </div>
-            </div>
-
-            <h2 class="section-title">Drama Korea</h2>
-            <div id="koreanGrid" class="movie-grid">
-                <div class="loading">Memuat konten... </div>
-            </div>
-
-            <h2 class="section-title">Drama China</h2>
-            <div id="chineseGrid" class="movie-grid">
-                <div class="loading">Memuat konten... </div>
-            </div>
-
-            <h2 class="section-title">Drama & Film Thailand</h2>
-            <div id="thaiGrid" class="movie-grid">
-                <div class="loading">Memuat konten... </div>
-            </div>
-
-            <h2 class="section-title">Rekomendasi Adult (18+)</h2>
-            <div id="adultGrid" class="movie-grid">
-                <div class="loading">Memuat konten... </div>
-            </div>
-        </div>
-
+<div class="container">
+    <div id="filterResultSection">
+        <h2 class="section-title" id="filterResultTitle">Hasil <button class="close-panel-btn" onclick="resetToHome()">Kembali</button></h2>
+        <div id="filterGrid" class="movie-grid"></div>
     </div>
 
-    <footer>
-        <p>&copy; 2026 StreamAuto Engine. Data real-time bersumber dari TMDB Gateway.</p>
-    </footer>
+    <div id="mainCategoriesSection">
+        <h2 class="section-title">Film Terbaru</h2>
+        <div id="latestGrid" class="movie-grid"><div class="loading">Memuat...</div></div>
+        
+        <h2 class="section-title">Box Office USA</h2>
+        <div id="usaGrid" class="movie-grid"><div class="loading">Memuat...</div></div>
 
-    <script>
-        const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e'; 
-        const BASE_URL = 'https://api.themoviedb.org/3';
-        const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+        <h2 class="section-title">Film Indonesia</h2>
+        <div id="indonesianGrid" class="movie-grid"><div class="loading">Memuat...</div></div>
 
-        // Pemuatan Default Beranda
-        function loadDefaultCategories() {
-            fetchDiscover(`${BASE_URL}/discover/movie?with_original_language=en`, 'usaGrid', 'movie');
-            fetchDiscover(`${BASE_URL}/discover/movie?with_original_language=id`, 'indonesianGrid', 'movie');
-            fetchDiscover(`${BASE_URL}/discover/tv?with_original_language=ko`, 'koreanGrid', 'tv');
-            fetchDiscover(`${BASE_URL}/discover/tv?with_original_language=zh`, 'chineseGrid', 'tv');
-            fetchDiscover(`${BASE_URL}/discover/movie?with_original_language=th`, 'thaiGrid', 'movie');
-            // Memuat khusus film dengan parameter sertifikasi dewasa / include_adult=true secara eksplisit
-            fetchDiscover(`${BASE_URL}/discover/movie?include_adult=true&sort_by=popularity.desc`, 'adultGrid', 'movie');
-        }
+        <h2 class="section-title">Drama Korea</h2>
+        <div id="koreanGrid" class="movie-grid"><div class="loading">Memuat...</div></div>
+    </div>
+</div>
 
-        function fetchDiscover(urlEndpoint, targetId, contentType) {
-            let connector = urlEndpoint.includes('?') ? '&' : '?';
-            fetch(`${urlEndpoint}${connector}api_key=${TMDB_API_KEY}&sort_by=popularity.desc&page=1&include_adult=true`)
-                .then(res => res.json())
-                .then(data => renderData(data.results, targetId, contentType))
-                .catch(() => document.getElementById(targetId).innerHTML = "<p class='loading'>Gagal memuat data.</p>");
-        }
+<script>
+    const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e'; 
+    const BASE_URL = 'https://api.themoviedb.org/3';
+    const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-        // LOGIC UTAMA: FILTER GENRE DAN ASAL NEGARA GABUNGAN
-        function executeFilter() {
-            const genreId = document.getElementById('genreSelect').value;
-            const countryCode = document.getElementById('countrySelect').value;
+    function loadContent() {
+        fetchDiscover(`${BASE_URL}/discover/movie?sort_by=release_date.desc&primary_release_date.lte=2026-05-30`, 'latestGrid', 'movie');
+        fetchDiscover(`${BASE_URL}/discover/movie?with_original_language=en`, 'usaGrid', 'movie');
+        fetchDiscover(`${BASE_URL}/discover/movie?with_original_language=id`, 'indonesianGrid', 'movie');
+        fetchDiscover(`${BASE_URL}/discover/tv?with_original_language=ko`, 'koreanGrid', 'tv');
+    }
 
-            if (!genreId && !countryCode) {
-                resetToHome();
-                return;
-            }
+    function fetchDiscover(urlEndpoint, targetId, contentType) {
+        let connector = urlEndpoint.includes('?') ? '&' : '?';
+        fetch(`${urlEndpoint}${connector}api_key=${TMDB_API_KEY}&page=1&include_adult=true`)
+            .then(res => res.json())
+            .then(data => renderData(data.results, targetId, contentType))
+            .catch(() => document.getElementById(targetId).innerHTML = "<p class='loading'>Gagal memuat.</p>");
+    }
 
-            document.getElementById('searchInput').value = '';
+    function renderData(results, targetId, contentType) {
+        const grid = document.getElementById(targetId);
+        if (targetId !== 'filterGrid') grid.innerHTML = '';
+        results.slice(0, 12).forEach(item => {
+            if (!item.poster_path) return;
+            const title = item.name || item.title;
+            const card = document.createElement('div');
+            card.className = 'movie-card';
+            card.innerHTML = `
+                <a href="stream.html?id=${item.id}&type=${contentType === 'auto' ? item.media_type : contentType}">
+                    <img src="${IMAGE_BASE_URL}${item.poster_path}" loading="lazy">
+                    <div class="movie-info">
+                        <h3>${title}</h3>
+                        <div class="card-meta"><span class="year">📅 ${ (item.release_date || item.first_air_date || 'N/A').split('-')[0] }</span><span class="rating">⭐ ${item.vote_average.toFixed(1)}</span></div>
+                    </div>
+                </a>`;
+            grid.appendChild(card);
+        });
+    }
 
-            const filterGrid = document.getElementById('filterGrid');
-            filterGrid.innerHTML = "<div class='loading'>Memproses filter konten...</div>";
-            
-            document.getElementById('mainCategoriesSection').style.display = 'none';
-            document.getElementById('filterResultSection').style.display = 'block';
-            document.getElementById('filterResultTitle').innerHTML = `Hasil Filter Konten <button class="close-panel-btn" onclick="resetToHome()">Kembali</button>`;
+    function executeFilter() {
+        const genreId = document.getElementById('genreSelect').value;
+        const countryCode = document.getElementById('countrySelect').value;
+        if (!genreId && !countryCode) return resetToHome();
+        
+        document.getElementById('mainCategoriesSection').style.display = 'none';
+        document.getElementById('filterResultSection').style.display = 'block';
+        document.getElementById('filterGrid').innerHTML = "<div class='loading'>Memfilter...</div>";
+        
+        let url = `${BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&include_adult=true${genreId ? '&with_genres='+genreId : ''}${countryCode ? '&with_original_language='+countryCode : ''}`;
+        fetch(url).then(res => res.json()).then(data => {
+            document.getElementById('filterGrid').innerHTML = '';
+            renderData(data.results, 'filterGrid', 'movie');
+        });
+    }
 
-            let filterUrl = `${BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&sort_by=popularity.desc&include_adult=true&page=1`;
-            
-            if (genreId) {
-                if (genreId === 'adult') {
-                    // Jika memilih filter khusus adult, paksa parameter pencarian tanpa batas sensor
-                    filterUrl += `&include_adult=true`;
-                } else {
-                    filterUrl += `&with_genres=${genreId}`;
-                }
-            }
-            if (countryCode) filterUrl += `&with_original_language=${countryCode}`;
+    function executeSearch() {
+        const query = document.getElementById('searchInput').value.trim();
+        if (!query) return;
+        document.getElementById('mainCategoriesSection').style.display = 'none';
+        document.getElementById('filterResultSection').style.display = 'block';
+        fetch(`${BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=true`)
+            .then(res => res.json()).then(data => {
+                document.getElementById('filterGrid').innerHTML = '';
+                renderData(data.results.filter(i => i.poster_path), 'filterGrid', 'auto');
+            });
+    }
 
-            fetch(filterUrl)
-                .then(res => res.json())
-                .then(data => {
-                    filterGrid.innerHTML = '';
-                    if (!data.results || data.results.length === 0) {
-                        filterGrid.innerHTML = "<p class='loading'>Konten dengan kombinasi filter tersebut tidak ditemukan.</p>";
-                        return;
-                    }
-                    renderData(data.results, 'filterGrid', 'movie');
-                })
-                .catch(() => filterGrid.innerHTML = "<p class='loading'>Gagal memproses filter.</p>");
-        }
+    function handleSearchKeyPress(e) { if(e.key === 'Enter') executeSearch(); }
+    function resetToHome() {
+        document.getElementById('filterResultSection').style.display = 'none';
+        document.getElementById('mainCategoriesSection').style.display = 'block';
+    }
 
-        // LOGIC: PENCARIAN JUDUL MANUAL
-        function executeSearch() {
-            const query = document.getElementById('searchInput').value.trim();
-            if (!query) return;
-
-            document.getElementById('genreSelect').value = "";
-            document.getElementById('countrySelect').value = "";
-
-            const filterGrid = document.getElementById('filterGrid');
-            filterGrid.innerHTML = "<div class='loading'>Mencari judul konten...</div>";
-            
-            document.getElementById('mainCategoriesSection').style.display = 'none';
-            document.getElementById('filterResultSection').style.display = 'block';
-            document.getElementById('filterResultTitle').innerHTML = `Hasil Pencarian: "${query}" <button class="close-panel-btn" onclick="resetToHome()">Kembali</button>`;
-
-            fetch(`${BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&language=id-ID&query=${encodeURIComponent(query)}&page=1&include_adult=true`)
-                .then(res => res.json())
-                .then(data => {
-                    filterGrid.innerHTML = '';
-                    const validItems = data.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path);
-
-                    if (validItems.length === 0) {
-                        filterGrid.innerHTML = "<p class='loading'>Judul tidak ditemukan. Coba kata kunci lainnya.</p>";
-                        return;
-                    }
-                    renderData(validItems, 'filterGrid', 'auto');
-                })
-                .catch(() => filterGrid.innerHTML = "<p class='loading'>Gagal melakukan pencarian.</p>");
-        }
-
-        function handleSearchKeyPress(event) {
-            if (event.key === 'Enter') executeSearch();
-        }
-
-        function resetToHome() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('genreSelect').value = '';
-            document.getElementById('countrySelect').value = '';
-            document.getElementById('filterResultSection').style.display = 'none';
-            document.getElementById('mainCategoriesSection').style.display = 'block';
-        }
-
-        // RENDER KARTU FILM
-        function renderData(results, targetId, contentType) {
-            const grid = document.getElementById(targetId);
-            if (targetId !== 'filterGrid') grid.innerHTML = '';
-
-            if (!results || results.length === 0) return;
-
-            const displayLimit = (targetId === 'filterGrid') ? results.length : 12;
-
-            results.slice(0, displayLimit).forEach(item => {
-                if (!item.poster_path) return;
-
-                const title = item.name || item.title;
-                const poster = `${IMAGE_BASE_URL}${item.poster_path}`;
-                const rating = item.vote_average ? item.vote_average.toFixed(1) : '0.0';
-                
-                const dateRaw = item.first_air_date || item.release_date;
-                const year = dateRaw ? dateRaw.split('-')[0] : 'N/A';
+    window.onload = loadContent;
+</script>
+</body>
+</html>
                 
                 let currentType = contentType;
                 if (contentType === 'auto') currentType = item.media_type;
