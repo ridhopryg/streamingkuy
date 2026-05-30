@@ -6,7 +6,7 @@
     <title>StreamAuto - Platform Streaming Film & Drama</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0f172a; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; overflow-x: hidden; }
+        body { background: #0f172a; color: #f8fafc; font-family: 'Segoe UI', sans-serif; min-height: 100vh; overflow-x: hidden; }
         
         header { background: #1e293b; padding: 15px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #334155; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
         .header-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
@@ -74,9 +74,6 @@
         
         <h2 class="section-title">Drama & Film Thailand</h2>
         <div id="thaiGrid" class="movie-grid"><div class="loading">Memuat...</div></div>
-
-        <h2 class="section-title">Rekomendasi Adult (18+)</h2>
-        <div id="adultGrid" class="movie-grid"><div class="loading">Memuat...</div></div>
     </div>
 </div>
 
@@ -91,7 +88,6 @@
         fetchDiscover(`${BASE_URL}/discover/tv?with_original_language=ko`, 'koreanGrid', 'tv');
         fetchDiscover(`${BASE_URL}/discover/tv?with_original_language=zh`, 'chineseGrid', 'tv');
         fetchDiscover(`${BASE_URL}/discover/movie?with_original_language=th`, 'thaiGrid', 'movie');
-        fetchDiscover(`${BASE_URL}/discover/movie?include_adult=true&sort_by=popularity.desc`, 'adultGrid', 'movie');
     }
 
     function fetchDiscover(urlEndpoint, targetId, contentType) {
@@ -105,7 +101,9 @@
     function renderData(results, targetId, contentType) {
         const grid = document.getElementById(targetId);
         if (targetId !== 'filterGrid') grid.innerHTML = '';
-        results.slice(0, 12).forEach(item => {
+        
+        // Menampilkan semua hasil yang didapat
+        results.forEach(item => {
             if (!item.poster_path) return;
             const title = item.name || item.title;
             const card = document.createElement('div');
@@ -129,13 +127,21 @@
         
         document.getElementById('mainCategoriesSection').style.display = 'none';
         document.getElementById('filterResultSection').style.display = 'block';
-        document.getElementById('filterGrid').innerHTML = "<div class='loading'>Memfilter...</div>";
+        const filterGrid = document.getElementById('filterGrid');
+        filterGrid.innerHTML = "<div class='loading'>Memuat konten melimpah...</div>";
         
-        let url = `${BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&include_adult=true${genreId ? '&with_genres='+genreId : ''}${countryCode ? '&with_original_language='+countryCode : ''}`;
-        fetch(url).then(res => res.json()).then(data => {
-            document.getElementById('filterGrid').innerHTML = '';
-            renderData(data.results, 'filterGrid', 'movie');
-        });
+        const baseUrlFilter = `${BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&include_adult=true`;
+        const filters = `${genreId ? '&with_genres='+genreId : ''}${countryCode ? '&with_original_language='+countryCode : ''}`;
+        
+        // Panggil 2 halaman sekaligus agar hasil banyak
+        Promise.all([
+            fetch(`${baseUrlFilter}${filters}&page=1`).then(res => res.json()),
+            fetch(`${baseUrlFilter}${filters}&page=2`).then(res => res.json())
+        ]).then(results => {
+            const combinedResults = [...results[0].results, ...results[1].results];
+            filterGrid.innerHTML = '';
+            renderData(combinedResults, 'filterGrid', 'movie');
+        }).catch(() => filterGrid.innerHTML = "<p class='loading'>Gagal memuat.</p>");
     }
 
     function executeSearch() {
