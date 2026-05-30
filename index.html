@@ -35,8 +35,6 @@
         #filterResultSection { display: none; }
         .close-panel-btn { background: #334155; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-left: 15px; }
         .loading { text-align: center; padding: 40px 0; color: #64748b; grid-column: 1 / -1; }
-
-        @media (max-width: 768px) { .movie-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); } }
     </style>
 </head>
 <body>
@@ -46,7 +44,7 @@
         <a href="index.html" class="logo">Stream<span>Auto</span></a>
         <div class="controls-wrapper">
             <select id="genreSelect" class="filter-select" onchange="executeFilter()"><option value="">Semua Genre</option><option value="28">Aksi</option><option value="10749">Romantis</option><option value="27">Horor</option><option value="18">Drama</option><option value="35">Komedi</option></select>
-            <select id="countrySelect" class="filter-select" onchange="executeFilter()"><option value="">Semua Negara</option><option value="en">USA</option><option value="id">Indonesia</option><option value="ko">Korea</option></select>
+            <select id="countrySelect" class="filter-select" onchange="executeFilter()"><option value="">Semua Negara</option><option value="en">USA</option><option value="id">Indonesia</option><option value="ko">Korea</option><option value="zh">China</option><option value="th">Thailand</option></select>
             <div class="search-container">
                 <input type="text" id="searchInput" class="search-input" placeholder="Cari judul..." onkeypress="handleSearchKeyPress(event)">
                 <button class="search-btn" onclick="executeSearch()">🔍</button>
@@ -62,9 +60,6 @@
     </div>
 
     <div id="mainCategoriesSection">
-        <h2 class="section-title">Film Terbaru</h2>
-        <div id="latestGrid" class="movie-grid"><div class="loading">Memuat...</div></div>
-        
         <h2 class="section-title">Box Office USA</h2>
         <div id="usaGrid" class="movie-grid"><div class="loading">Memuat...</div></div>
 
@@ -73,6 +68,15 @@
 
         <h2 class="section-title">Drama Korea</h2>
         <div id="koreanGrid" class="movie-grid"><div class="loading">Memuat...</div></div>
+        
+        <h2 class="section-title">Drama China</h2>
+        <div id="chineseGrid" class="movie-grid"><div class="loading">Memuat...</div></div>
+        
+        <h2 class="section-title">Drama & Film Thailand</h2>
+        <div id="thaiGrid" class="movie-grid"><div class="loading">Memuat...</div></div>
+
+        <h2 class="section-title">Rekomendasi Adult (18+)</h2>
+        <div id="adultGrid" class="movie-grid"><div class="loading">Memuat...</div></div>
     </div>
 </div>
 
@@ -81,16 +85,18 @@
     const BASE_URL = 'https://api.themoviedb.org/3';
     const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-    function loadContent() {
-        fetchDiscover(`${BASE_URL}/discover/movie?sort_by=release_date.desc&primary_release_date.lte=2026-05-30`, 'latestGrid', 'movie');
+    function loadDefaultCategories() {
         fetchDiscover(`${BASE_URL}/discover/movie?with_original_language=en`, 'usaGrid', 'movie');
         fetchDiscover(`${BASE_URL}/discover/movie?with_original_language=id`, 'indonesianGrid', 'movie');
         fetchDiscover(`${BASE_URL}/discover/tv?with_original_language=ko`, 'koreanGrid', 'tv');
+        fetchDiscover(`${BASE_URL}/discover/tv?with_original_language=zh`, 'chineseGrid', 'tv');
+        fetchDiscover(`${BASE_URL}/discover/movie?with_original_language=th`, 'thaiGrid', 'movie');
+        fetchDiscover(`${BASE_URL}/discover/movie?include_adult=true&sort_by=popularity.desc`, 'adultGrid', 'movie');
     }
 
     function fetchDiscover(urlEndpoint, targetId, contentType) {
         let connector = urlEndpoint.includes('?') ? '&' : '?';
-        fetch(`${urlEndpoint}${connector}api_key=${TMDB_API_KEY}&page=1&include_adult=true`)
+        fetch(`${urlEndpoint}${connector}api_key=${TMDB_API_KEY}&sort_by=popularity.desc&page=1&include_adult=true`)
             .then(res => res.json())
             .then(data => renderData(data.results, targetId, contentType))
             .catch(() => document.getElementById(targetId).innerHTML = "<p class='loading'>Gagal memuat.</p>");
@@ -150,36 +156,7 @@
         document.getElementById('mainCategoriesSection').style.display = 'block';
     }
 
-    window.onload = loadContent;
+    window.onload = loadDefaultCategories;
 </script>
-</body>
-</html>
-                
-                let currentType = contentType;
-                if (contentType === 'auto') currentType = item.media_type;
-
-                let streamUrl = `stream.html?id=${item.id}&type=${currentType}`;
-                if (currentType === 'tv') streamUrl += `&s=1&e=1`;
-
-                const card = document.createElement('div');
-                card.className = 'movie-card';
-                card.innerHTML = `
-                    <a href="${streamUrl}">
-                        <img src="${poster}" alt="${title}" loading="lazy">
-                        <div class="movie-info">
-                            <h3>${title}</h3>
-                            <div class="card-meta">
-                                <span class="year">📅 ${year}</span>
-                                <span class="rating">⭐ ${rating}</span>
-                            </div>
-                        </div>
-                    </a>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        window.onload = loadDefaultCategories;
-    </script>
 </body>
 </html>
