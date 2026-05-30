@@ -3,121 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">StreamAuto — Player</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Nonton - StreamAuto</title>
     <style>
-        :root {
-            --bg-deep: #080d19; --bg-card: #0f1825; --bg-hover: #182235;
-            --border: #1a2b42; --border-l: #243d5a; --accent: #2f8fff;
-            --text-1: #eef2ff; --text-2: #7a9abf; --text-3: #3e5573;
-            --green: #22c55e; --gold: #f5a623;
-        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg-deep); color: var(--text-1); font-family: 'Plus Jakarta Sans', sans-serif; padding-bottom: 60px; }
+        body { background: #0f172a; color: #f8fafc; font-family: 'Segoe UI', sans-serif; min-height: 100vh; }
         
-        header { padding: 12px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(8,13,25,.92); backdrop-filter: blur(10px); z-index: 200; }
-        .hdr { max-width: 1080px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        .player-wrap { max-width: 1080px; margin: 26px auto 0; padding: 0 20px; }
-        .video-box { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
-        .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        
-        .srv-section { max-width: 1080px; margin: 24px auto 0; padding: 0 20px; }
-        .srv-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
-        .srv-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .srv-btn { padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg-deep); color: var(--text-2); transition: .2s; }
-        .srv-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+        /* Navigasi */
+        .top-nav { padding: 20px; }
+        .back-btn { 
+            background: #1e293b; color: #38bdf8; padding: 10px 20px; 
+            text-decoration: none; border-radius: 6px; font-size: 14px; 
+            border: 1px solid #334155; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .back-btn:hover { background: #334155; }
+
+        /* Player Area */
+        .player-container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+        .video-wrapper { 
+            position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; 
+            background: #000; border-radius: 8px; border: 1px solid #334155;
+        }
+        .video-wrapper iframe { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; 
+        }
+
+        /* Detail Film */
+        .info-section { padding: 20px 0; }
+        .movie-title { font-size: 1.8em; margin-bottom: 10px; color: #fff; }
+        .movie-meta { color: #94a3b8; font-size: 0.9em; }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="hdr">
-        <a href="#" style="color:var(--accent); text-decoration:none; font-weight:800; font-size:20px;">Stream<span>Auto</span></a>
-    </div>
-</header>
-
-<div class="player-wrap">
-    <div class="video-box">
-        <iframe id="videoPlayer" src="" allowfullscreen></iframe>
-    </div>
-</div>
-
-<div class="srv-section" id="serverContainer">
+    <div class="top-nav">
+        <a href="index.html" class="back-btn">&larr; Kembali ke Beranda</a>
     </div>
 
-<script>
-    const P = new URLSearchParams(window.location.search);
-    const cId = P.get('id'), cType = P.get('type') || 'movie', cS = P.get('s') || '1', cE = P.get('e') || '1';
-    let curNum = 1;
-
-    function SP(style, lang) {
-        if (lang === 'off') return '';
-        const isID = (lang === 'id');
-        const map = {
-            'vsid': isID ? '?sub_id=indonesian&sub_default=1' : '?sub_id=english&sub_default=1',
-            'sl_a': isID ? '&sub.lang=id&sub.default=1' : '&sub.lang=en&sub.default=1',
-            'lg':   isID ? '?lang=id' : '?lang=en',
-            'si':   isID ? '?sub_id=id' : '?sub_id=en',
-            'lc_a': isID ? '&locale=id&sub.default=1' : '&locale=en&sub.default=1',
-            'lan':  isID ? '?language=id' : '?language=en'
-        };
-        return map[style] || '';
-    }
-
-    function buildUrl(n, lang = 'id') {
-        const id = cId;
-        const urls = {
-            1:  { m: `https://vidsrc.to/embed/movie/${id}${SP('vsid',lang)}`, t: `https://vidsrc.to/embed/tv/${id}/${cS}/${cE}${SP('vsid',lang)}` },
-            2:  { m: `https://vidsrc.me/embed/movie?tmdb=${id}${SP('sl_a',lang)}`, t: `https://vidsrc.me/embed/tv?tmdb=${id}&sea=${cS}&epi=${cE}${SP('sl_a',lang)}` },
-            3:  { m: `https://autoembed.to/movie/tmdb/${id}${SP('lg',lang)}`, t: `https://autoembed.to/tv/tmdb/${id}-${cS}-${cE}${SP('lg',lang)}` },
-            4:  { m: `https://vidlink.pro/movie/${id}${SP('lg',lang)}`, t: `https://vidlink.pro/tv/${id}/${cS}/${cE}${SP('lg',lang)}` },
-            5:  { m: `https://embed.su/embed/movie/${id}${SP('si',lang)}`, t: `https://embed.su/embed/tv/${id}/${cS}/${cE}${SP('si',lang)}` },
-            6:  { m: `https://vidsrc.xyz/embed/movie?tmdb=${id}${SP('sl_a',lang)}`, t: `https://vidsrc.xyz/embed/tv?tmdb=${id}&season=${cS}&episode=${cE}${SP('sl_a',lang)}` },
-            7:  { m: `https://www.2embed.cc/embed/${id}`, t: `https://www.2embed.cc/embedtv/${id}&s=${cS}&e=${cE}` },
-            8:  { m: `https://moviesapi.club/movie/${id}`, t: `https://moviesapi.club/tv/${id}-${cS}-${cE}` },
-            9:  { m: `https://player.smashy.stream/movie/${id}${SP('lc_a',lang)}`, t: `https://player.smashy.stream/tv/${id}?s=${cS}&e=${cE}${SP('lc_a',lang)}` },
-            10: { m: `https://player.videasy.net/movie/${id}${SP('lan',lang)}`, t: `https://player.videasy.net/tv/${id}/${cS}/${cE}${SP('lan',lang)}` },
-            11: { m: `https://vidsrc.pro/embed/movie/${id}${SP('lg',lang)}`, t: `https://vidsrc.pro/embed/tv/${id}/${cS}/${cE}${SP('lg',lang)}` },
-            12: { m: `https://vidsrc.net/embed/movie?tmdb=${id}${SP('sl_a',lang)}`, t: `https://vidsrc.net/embed/tv?tmdb=${id}&season=${cS}&episode=${cE}${SP('sl_a',lang)}` },
-            13: { m: `https://vidsrc.stream/embed/movie/${id}${SP('sl_a',lang)}`, t: `https://vidsrc.stream/embed/tv/${id}/${cS}/${cE}${SP('sl_a',lang)}` },
-            14: { m: `https://multiembed.mov/?video_id=${id}&tmdb=1${SP('lg',lang)}`, t: `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${cS}&e=${cE}${SP('lg',lang)}` },
-            15: { m: `https://www.2embed.skin/embed/${id}`, t: `https://www.2embed.skin/embedtv/${id}&s=${cS}&e=${cE}` },
-            16: { m: `https://playhydrax.com/?v=${id}&tmdb=1`, t: `https://playhydrax.com/?v=${id}&tmdb=1&s=${cS}&e=${cE}` },
-            17: { m: `https://vidsrc.vip/embed/movie/${id}${SP('lg',lang)}`, t: `https://vidsrc.vip/embed/tv/${id}/${cS}/${cE}${SP('lg',lang)}` },
-            18: { m: `https://play.napiembed.my.id/movie/${id}${SP('lg',lang)}`, t: `https://play.napiembed.my.id/tv/${id}/${cS}/${cE}${SP('lg',lang)}` },
-            19: { m: `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1${SP('lg',lang)}`, t: `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1&s=${cS}&e=${cE}${SP('lg',lang)}` },
-            20: { m: `https://vidsrc.to/embed/movie/${id}${SP('vsid',lang)}`, t: `https://vidsrc.to/embed/tv/${id}/${cS}/${cE}${SP('vsid',lang)}` }
-        };
-        const u = urls[n] || urls[1];
-        return (cType === 'movie' ? u.m : u.t);
-    }
-
-    function go(num, btn) {
-        curNum = num;
-        document.getElementById('videoPlayer').src = buildUrl(num, 'id');
-        document.querySelectorAll('.srv-btn').forEach(b => b.classList.remove('active'));
-        if (btn) btn.classList.add('active');
-    }
-
-    window.onload = () => {
-        const container = document.getElementById('serverContainer');
-        const card = document.createElement('div'); card.className = 'srv-card';
-        const btns = document.createElement('div'); btns.className = 'srv-btns';
+    <div class="player-container">
+        <div class="video-wrapper">
+            <iframe id="moviePlayer" src="" allowfullscreen></iframe>
+        </div>
         
-        for(let i=1; i<=20; i++) {
-            let b = document.createElement('button');
-            b.className = 'srv-btn' + (i === 1 ? ' active' : '');
-            b.textContent = 'Srv ' + i;
-            b.onclick = function() { go(i, this); };
-            btns.appendChild(b);
-        }
-        card.appendChild(btns);
-        container.appendChild(card);
-        go(1);
-    };
-</script>
-</body>
-</html>
-</script>
+        <div class="info-section">
+            <h1 id="title" class="movie-title">Memuat judul...</h1>
+            <p id="meta" class="movie-meta">Sedang memuat detail konten...</p>
+        </div>
+    </div>
+
+    <script>
+        // Mengambil ID dari URL
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        const type = params.get('type');
+        const TMDB_API_KEY = 'b9b1bba28890e19391f15763ac33de7e';
+
+        // Mengatur sumber iframe (menggunakan Embed TMDB atau provider lainnya)
+        // Catatan: Ganti dengan link streaming yang Anda gunakan
+        const player = document.getElementById('moviePlayer');
+        player.src = `https://www.2embed.cc/embed/${type === 'tv' ? 'series' : 'movie'}/${id}`;
+
+        // Mengambil detail judul dari TMDB
+        fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB_API_KEY}&language=id-ID`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('title').innerText = data.title || data.name;
+                document.getElementById('meta').innerText = `${data.release_date || data.first_air_date} • ⭐ ${data.vote_average.toFixed(1)} • ${data.genres.map(g => g.name).join(', ')}`;
+            })
+            .catch(() => document.getElementById('title').innerText = "Gagal memuat detail.");
+    </script>
 </body>
 </html>
